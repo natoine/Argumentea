@@ -6,7 +6,6 @@
 
 # Ignore Play! working directory #
 db
-eclipse
 log
 logs
 precompiled
@@ -14,3 +13,6 @@ tmp
 test-result
 eclipse
 server.pid
+ArgumenteaServer/project
+ArgumenteaServer/target
+.project
