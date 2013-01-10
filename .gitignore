@@ -13,6 +13,5 @@ tmp
 test-result
 eclipse
 server.pid
-ArgumenteaServer/project
 ArgumenteaServer/target
 .project
