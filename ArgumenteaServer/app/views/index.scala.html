@@ -1,7 +1,23 @@
-@(message: String)
+@(uas: List[UserAccount], uaForm: Form[UserAccount])
 
-@main("Welcome to Play 2.0") {
-    
-    @play20.welcome(message, style = "Java")
-    
+@import helper._
+
+@main("UserAccounts") {
+  
+  <h1>@uas.size() User(s)</h1>
+  
+  <ul>
+    @for(ua <- uas) {
+      <li>@ua.nickname </li>
+    }
+  </ul>
+  
+  <h2>Add a new User</h2>
+  
+  @form(routes.Application.newUserAccount()) {
+     @inputText(uaForm("nickname"))
+     <input type="submit" value="Create">
+  
+  }
+
 }
