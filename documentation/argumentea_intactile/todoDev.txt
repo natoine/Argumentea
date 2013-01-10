@@ -1,0 +1,7 @@
+* GlassFish + PortletContainer. Tuto et sauvegarde des installs.
+* Maven Assembly. Se former et créer un projet Argumentea avec Glassfish et PortletContainer embeded.
+* incorporer les portlets précédents dans le projet Maven
+* jsp portail
+* incorporer le travail d'intactile dans le projet
+* déposer version 2.0.0 d'argumentea
+
