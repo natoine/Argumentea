@@ -1,0 +1,30 @@
+@(uas: List[UserAccount], uaForm: Form[UserAccount])
+
+@import helper._
+
+@main("UserAccounts") {
+  
+  <h1>@uas.size() User(s)</h1>
+  
+  <ul>
+    @for(ua <- uas) {
+      <li>@ua.getNickname : @ua.getFirstname @ua.getLastname @ua.getEmail
+      @form(routes.Application.deleteUserAccount(ua.getId.toString)) {
+                    <input type="submit" value="Delete">
+                }
+      </li>
+    }
+  </ul>
+  
+  <h2>Add a new User</h2>
+  
+  @form(routes.Application.newUserAccount()) {
+     @inputText(uaForm("nickname"), '_label -> "Pseudo :")
+     @inputText(uaForm("firstname"), '_label -> "Prénom :")
+     @inputText(uaForm("lastname"), '_label -> "Nom :")
+     @inputText(uaForm("email"), '_label -> "Mél :")
+     <input type="submit" value="Create">
+  
+  }
+
+}

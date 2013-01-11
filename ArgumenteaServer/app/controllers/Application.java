@@ -16,17 +16,22 @@ public class Application extends Controller {
 	}
 
 	public static Result userAccounts() {
-		return ok(views.html.index.render(UserAccount.all(), userAccountForm));
+		return ok(views.html.users.render(UserAccount.all(), userAccountForm));
 	}
 
 	public static Result newUserAccount() {
 		Form<UserAccount> filledForm = userAccountForm.bindFromRequest();
 		if(filledForm.hasErrors()) {
-			return badRequest(views.html.index.render(UserAccount.all(), filledForm));
+			return badRequest(views.html.users.render(UserAccount.all(), filledForm));
 		} else {
 			UserAccount.create(filledForm.get());
 			return redirect(routes.Application.userAccounts());
 		}
+	}
+	
+	public static Result deleteUserAccount(String id) {
+		UserAccount.delete(id);
+		return redirect(routes.Application.userAccounts());
 	}
 
 }
