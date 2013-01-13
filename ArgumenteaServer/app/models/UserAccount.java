@@ -2,7 +2,9 @@ package models;
 
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.bson.types.ObjectId;
 
@@ -74,6 +76,15 @@ public class UserAccount
 		}
 	}
 
+	public static Map<String,String> options() {
+		List<UserAccount> uas = all();
+		LinkedHashMap<String,String> options = new LinkedHashMap<String,String>();
+		for(UserAccount ua: uas) {
+			options.put(ua.id.toString(), ua.nickname);
+		}
+		return options;
+	}
+	
 	public static void create(UserAccount userAccount) {
 		MorphiaObject.datastore.save(userAccount);
 	}

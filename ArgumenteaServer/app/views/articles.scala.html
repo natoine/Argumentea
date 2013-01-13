@@ -1,0 +1,32 @@
+@(articles: List[Article], articleForm: Form[Article])
+
+@import helper._
+
+@main("Articles") {
+  
+  <h1>@articles.size() Article(s)</h1>
+  
+  <ul>
+    @for(article <- articles) {
+      <li>@article.getTitle
+      <div class="content">@article.getContent</div>
+      @form(routes.Application.deleteArticle(article.getId.toString)) {
+                    <input type="submit" value="Delete">
+                }
+      </li>
+    }
+  </ul>
+  
+  <h2>Add a new Article</h2>
+  
+  @form(routes.Application.newArticle()) {
+     @inputText(articleForm("title"), '_label -> "Titre :")
+     @textarea(
+                articleForm("content"), 
+                '_label -> "Contenu", 'cols -> 50
+            )
+     <input type="submit" value="Create">
+  
+  }
+
+}

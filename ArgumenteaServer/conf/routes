@@ -5,10 +5,15 @@
 # Home page
 GET     /                           controllers.Application.index()
 
-
+#Users
 GET 	/users 						controllers.Application.userAccounts()
 POST 	/users 						controllers.Application.newUserAccount()
 POST    /users/:id/delete       	controllers.Application.deleteUserAccount(id: String)
+
+#Article
+GET		/articles					controllers.Application.articles()
+POST 	/articles 					controllers.Application.newArticle()
+POST    /articles/:id/delete       	controllers.Application.deleteArticle(id: String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
