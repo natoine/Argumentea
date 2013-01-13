@@ -1,0 +1,13 @@
+@(article: Article)
+
+@import helper._
+
+@main(article.getTitle) {
+  
+  <h1>@article.getTitle</h1>
+  
+  <div class="ArticleContent">
+  	@Html(article.getContent)
+  </div>
+
+}

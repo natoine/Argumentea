@@ -8,8 +8,8 @@
   
   <ul>
     @for(article <- articles) {
-      <li>@article.getTitle
-      <div class="content">@article.getContent</div>
+      <li><a href="@routes.Application.article(article.getId.toString)">@article.getTitle</a>
+      <div class="content">@Html(article.getContent)</div>
       @form(routes.Application.deleteArticle(article.getId.toString)) {
                     <input type="submit" value="Delete">
                 }

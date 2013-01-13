@@ -67,4 +67,8 @@ public class Article {
 		}
 	}
 	
+	public static Article findById(String id)
+	{
+		return MorphiaObject.datastore.find(Article.class).field("_id").equal(new ObjectId(id)).get();
+	}
 }

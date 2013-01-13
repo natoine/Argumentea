@@ -58,4 +58,11 @@ public class Application extends Controller {
 		Article.delete(id);
 		return redirect(routes.Application.articles());
 	}
+	
+	public static Result article(String id)
+	{
+		Article article = Article.findById(id);
+		if(article == null) return redirect(routes.Application.index());
+		else return ok(views.html.article.render(article));
+	}
 }

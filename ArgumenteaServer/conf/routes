@@ -14,6 +14,7 @@ POST    /users/:id/delete       	controllers.Application.deleteUserAccount(id: S
 GET		/articles					controllers.Application.articles()
 POST 	/articles 					controllers.Application.newArticle()
 POST    /articles/:id/delete       	controllers.Application.deleteArticle(id: String)
+GET		/article/:id				controllers.Application.article(id: String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
