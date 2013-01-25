@@ -1,0 +1,46 @@
+@(annotations: List[Annotation], annotationForm: Form[Annotation])
+
+@import helper._
+
+@main("Annotations") {
+  
+  <h1>@annotations.size() Annotation(s)</h1>
+  
+  <ul>
+    @for(annotation <- annotations) {
+      <li><a href="@routes.Application.annotation(annotation.getId.toString)">Porte sur : @annotation.getAnnotated.getTitle</a>
+      <div class="content">@Html(annotation.getContent)</div>
+      <div class="annotatedContent">@Html(annotation.getAnnotatedContent)</div>
+      @form(routes.Application.deleteAnnotation(annotation.getId.toString)) {
+                    <input type="submit" value="Delete">
+                }
+      </li>
+    }
+  </ul>
+  
+  <h2>Add a new Annotation</h2>
+  
+  @form(routes.Application.newAnnotation()) {
+     @textarea(
+                annotationForm("content"), 
+                '_label -> "Contenu ajouté", 'cols -> 50
+            )
+     @textarea(
+                annotationForm("annotatedContent"), 
+                '_label -> "Contenu annoté", 'cols -> 50
+            )
+     @select(annotationForm("author.id"), 
+        		options(UserAccount.options()),
+        		'_default -> "--- Choose a user ---",
+                '_label -> "User"
+                )
+     @select(annotationForm("annotated.id"), 
+        		options(Article.options()),
+        		'_default -> "--- Choose an article ---",
+                '_label -> "Article"
+                )
+     <input type="submit" value="Create">
+  
+  }
+
+}

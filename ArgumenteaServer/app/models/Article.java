@@ -1,7 +1,9 @@
 package models;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.bson.types.ObjectId;
 
@@ -76,6 +78,15 @@ public class Article {
 		} else {
 			//Logger.debug("ID No Found: " + idToDelete);
 		}
+	}
+	
+	public static Map<String,String> options() {
+		List<Article> as = all();
+		LinkedHashMap<String,String> options = new LinkedHashMap<String,String>();
+		for(Article a: as) {
+			options.put(a.id.toString(), a.title);
+		}
+		return options;
 	}
 	
 	public static Article findById(String id)

@@ -1,5 +1,8 @@
 package controllers;
 
+import java.util.List;
+
+import models.Annotation;
 import models.Article;
 import models.UserAccount;
 import play.*;
@@ -11,6 +14,7 @@ import views.html.*;
 public class Application extends Controller {
 	static Form<UserAccount> userAccountForm = form(UserAccount.class);
 	static Form<Article> articleForm = form(Article.class);
+	static Form<Annotation> annotationForm = form(Annotation.class);
 	
 	public static Result index() throws Exception {
 		// redirect to the "group Result
@@ -63,6 +67,42 @@ public class Application extends Controller {
 	{
 		Article article = Article.findById(id);
 		if(article == null) return redirect(routes.Application.index());
-		else return ok(views.html.article.render(article));
+		else
+		{	List<Annotation> annotations = Annotation.findByArticleId(id);
+			return ok(views.html.article.render(article, annotations));
+		}
 	}
+	
+	//Annotations
+	public static Result annotations() {
+		return ok(views.html.annotations.render(Annotation.all(), annotationForm));
+	}
+
+	public static Result getAnnotationsOnArticle(String id)
+	{
+		List<Annotation> annotations = Annotation.findByArticleId(id);		
+		return ok(views.html.annotations.render(annotations, annotationForm));
+	}
+	
+	public static Result newAnnotation() {
+		Form<Annotation> filledForm = annotationForm.bindFromRequest();
+		if(filledForm.hasErrors()) {
+			return badRequest(views.html.annotations.render(Annotation.all(), filledForm));
+		} else {
+			Annotation.create(filledForm.get());
+			return redirect(routes.Application.annotations());
+		}
+	}
+	
+	public static Result deleteAnnotation(String id) {
+		Annotation.delete(id);
+		return redirect(routes.Application.annotations());
+	}
+	
+	public static Result annotation(String id)
+	{
+		Annotation annotation = Annotation.findById(id);
+		if(annotation == null) return redirect(routes.Application.index());
+		else return ok(views.html.annotation.render(annotation));
+	}	
 }

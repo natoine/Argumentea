@@ -1,0 +1,19 @@
+@(annotation: Annotation)
+
+@import helper._
+
+@main("annotation") {
+  
+  <div class="AnnotationContent">
+  	@Html(annotation.getContent)
+  </div>
+  
+  <h1>Porte sur : <a href="@routes.Application.article(annotation.getAnnotated.getId.toString)">@annotation.getAnnotated.getTitle</a></h1>
+  <div class="AnnotatedContent">
+  	@Html(annotation.getAnnotatedContent)
+  </div>
+
+	<div class="author">
+		@annotation.getAuthor.getNickname
+	</div>
+}
