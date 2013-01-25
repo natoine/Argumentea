@@ -25,6 +25,8 @@ public class Annotation {
 	@Required
 	private String content ;
 	private String annotatedContent ;
+	private String pointerBegin ; //du coup pointer mériterait d'être une classe avec sa propre méthode equals et une hierarchie de sous types
+	private String pointerEnd ;
 	
 	public ObjectId getId() {
 		return id;
@@ -56,6 +58,18 @@ public class Annotation {
 	}
 	public void setAnnotatedContent(String annotatedContent) {
 		this.annotatedContent = annotatedContent;
+	}
+	public String getPointerBegin() {
+		return pointerBegin;
+	}
+	public void setPointerBegin(String pointerBegin) {
+		this.pointerBegin = pointerBegin;
+	}
+	public String getPointerEnd() {
+		return pointerEnd;
+	}
+	public void setPointerEnd(String pointerEnd) {
+		this.pointerEnd = pointerEnd;
 	}
 	public static List<Annotation> all() {
 		if (MorphiaObject.datastore != null) {
