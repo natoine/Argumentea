@@ -9,6 +9,7 @@ import play.data.validation.Constraints.Required;
 
 import com.google.code.morphia.annotations.Entity;
 import com.google.code.morphia.annotations.Id;
+import com.google.code.morphia.annotations.Reference;
 
 import controllers.MorphiaObject;
 
@@ -20,6 +21,8 @@ public class Article {
 	@Required
 	private String content ;
 	private String title ;
+	@Reference
+	private UserAccount author ;
 
 	public ObjectId getId() {
 		return id;
@@ -43,6 +46,14 @@ public class Article {
 
 	public void setTitle(String title) {
 		this.title = title;
+	}
+
+	public UserAccount getAuthor() {
+		return author;
+	}
+
+	public void setAuthor(UserAccount author) {
+		this.author = author;
 	}
 
 	public static List<Article> all() {

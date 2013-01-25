@@ -25,6 +25,11 @@
                 articleForm("content"), 
                 '_label -> "Contenu", 'cols -> 50
             )
+     @select(articleForm("author.id"), 
+        		options(UserAccount.options()),
+        		'_default -> "--- Choose a user ---",
+                '_label -> "User"
+                )
      <input type="submit" value="Create">
   
   }
