@@ -16,48 +16,8 @@ import com.google.code.morphia.annotations.Reference;
 import controllers.MorphiaObject;
 
 @Entity
-public class Article {
-
-	@Id
-	private ObjectId id;
-	@Required
-	private String content ;
-	private String title ;
-	@Reference
-	private UserAccount author ;
-
-	public ObjectId getId() {
-		return id;
-	}
-
-	public void setId(ObjectId id) {
-		this.id = id;
-	}
-
-	public String getContent() {
-		return content;
-	}
-
-	public void setContent(String content) {
-		this.content = content;
-	}
-
-	public String getTitle() {
-		return title;
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
-	}
-
-	public UserAccount getAuthor() {
-		return author;
-	}
-
-	public void setAuthor(UserAccount author) {
-		this.author = author;
-	}
-
+public class Article extends Resource{
+	
 	public static List<Article> all() {
 		if (MorphiaObject.datastore != null) {
 			return MorphiaObject.datastore.find(Article.class).asList();
@@ -84,7 +44,7 @@ public class Article {
 		List<Article> as = all();
 		LinkedHashMap<String,String> options = new LinkedHashMap<String,String>();
 		for(Article a: as) {
-			options.put(a.id.toString(), a.title);
+			options.put(a.getId().toString(), a.getTitle());
 		}
 		return options;
 	}
