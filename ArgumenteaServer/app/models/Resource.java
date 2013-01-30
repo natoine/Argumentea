@@ -1,14 +1,23 @@
 package models;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.bson.types.ObjectId;
 
 import play.data.validation.Constraints.Required;
 
 import com.google.code.morphia.annotations.Entity;
 import com.google.code.morphia.annotations.Id;
+import com.google.code.morphia.annotations.Polymorphic;
 import com.google.code.morphia.annotations.Reference;
 
-@Entity
+import controllers.MorphiaObject;
+
+@Polymorphic
+@Entity("Resources")
 public abstract class Resource {
 
 	@Id
@@ -41,5 +50,27 @@ public abstract class Resource {
 	}
 	public void setContent(String content) {
 		this.content = content;
+	}
+	
+	public static List<Resource> all() {
+		if (MorphiaObject.datastore != null) {
+			return MorphiaObject.datastore.find(Resource.class).asList();
+		} else {
+			return new ArrayList<Resource>();
+		}
+	}
+	
+	public static Resource findById(String id)
+	{
+		return MorphiaObject.datastore.find(Resource.class).field("_id").equal(new ObjectId(id)).get();
+	}
+	
+	public static Map<String,String> options() {
+		List<Resource> resources = all();
+		LinkedHashMap<String,String> options = new LinkedHashMap<String,String>();
+		for(Resource r: resources) {
+			options.put(r.id.toString(), r.title);
+		}
+		return options;
 	}
 }

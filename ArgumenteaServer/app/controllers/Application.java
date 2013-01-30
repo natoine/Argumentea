@@ -45,13 +45,13 @@ public class Application extends Controller {
 	//Article
 	
 	public static Result articles() {
-		return ok(views.html.articles.render(Article.all(), articleForm));
+		return ok(views.html.articles.render(Article.allArticle(), articleForm));
 	}
 
 	public static Result newArticle() {
 		Form<Article> filledForm = articleForm.bindFromRequest();
 		if(filledForm.hasErrors()) {
-			return badRequest(views.html.articles.render(Article.all(), filledForm));
+			return badRequest(views.html.articles.render(Article.allArticle(), filledForm));
 		} else {
 			Article.create(filledForm.get());
 			return redirect(routes.Application.articles());
@@ -68,26 +68,26 @@ public class Application extends Controller {
 		Article article = Article.findById(id);
 		if(article == null) return redirect(routes.Application.index());
 		else
-		{	List<Annotation> annotations = Annotation.findByArticleId(id);
+		{	List<Annotation> annotations = Annotation.findByResourceId(id);
 			return ok(views.html.article.render(article, annotations));
 		}
 	}
 	
 	//Annotations
 	public static Result annotations() {
-		return ok(views.html.annotations.render(Annotation.all(), annotationForm));
+		return ok(views.html.annotations.render(Annotation.allAnnotation(), annotationForm));
 	}
 
 	public static Result getAnnotationsOnArticle(String id)
 	{
-		List<Annotation> annotations = Annotation.findByArticleId(id);		
+		List<Annotation> annotations = Annotation.findByResourceId(id);		
 		return ok(views.html.annotations.render(annotations, annotationForm));
 	}
 	
 	public static Result newAnnotation() {
 		Form<Annotation> filledForm = annotationForm.bindFromRequest();
 		if(filledForm.hasErrors()) {
-			return badRequest(views.html.annotations.render(Annotation.all(), filledForm));
+			return badRequest(views.html.annotations.render(Annotation.allAnnotation(), filledForm));
 		} else {
 			Annotation.create(filledForm.get());
 			return redirect(routes.Application.annotations());

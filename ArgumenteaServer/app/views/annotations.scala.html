@@ -35,9 +35,9 @@
                 '_label -> "User"
                 )
      @select(annotationForm("annotated.id"), 
-        		options(Article.options()),
-        		'_default -> "--- Choose an article ---",
-                '_label -> "Article"
+        		options(Resource.options()),
+        		'_default -> "--- Choose a resource ---",
+                '_label -> "Resource"
                 )
      @inputText(annotationForm("pointerBegin"), '_label -> "Begin :")
      @inputText(annotationForm("pointerEnd"), '_label -> "End :")

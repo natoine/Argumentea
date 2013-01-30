@@ -11,14 +11,16 @@ import play.data.validation.Constraints.Required;
 
 import com.google.code.morphia.annotations.Entity;
 import com.google.code.morphia.annotations.Id;
+import com.google.code.morphia.annotations.Polymorphic;
 import com.google.code.morphia.annotations.Reference;
 
 import controllers.MorphiaObject;
 
-@Entity
+@Polymorphic
+@Entity("Resources")
 public class Article extends Resource{
 	
-	public static List<Article> all() {
+	public static List<Article> allArticle() {
 		if (MorphiaObject.datastore != null) {
 			return MorphiaObject.datastore.find(Article.class).asList();
 		} else {
@@ -27,6 +29,7 @@ public class Article extends Resource{
 	}
 
 	public static void create(Article article) {
+		MorphiaObject.morphia.map(Resource.class);
 		MorphiaObject.datastore.save(article);
 	}
 
@@ -40,14 +43,14 @@ public class Article extends Resource{
 		}
 	}
 	
-	public static Map<String,String> options() {
-		List<Article> as = all();
+	/*public static Map<String,String> options() {
+		List<Article> as = allArticle();
 		LinkedHashMap<String,String> options = new LinkedHashMap<String,String>();
 		for(Article a: as) {
 			options.put(a.getId().toString(), a.getTitle());
 		}
 		return options;
-	}
+	}*/
 	
 	public static Article findById(String id)
 	{

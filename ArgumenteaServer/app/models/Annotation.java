@@ -9,23 +9,25 @@ import play.data.validation.Constraints.Required;
 
 import com.google.code.morphia.annotations.Entity;
 import com.google.code.morphia.annotations.Id;
+import com.google.code.morphia.annotations.Polymorphic;
 import com.google.code.morphia.annotations.Reference;
 
 import controllers.MorphiaObject;
 
-@Entity
+@Polymorphic
+@Entity("Resources")
 public class Annotation extends Resource{
 
 	@Reference
-	private Article annotated ;
+	private Resource annotated ;
 	private String annotatedContent ;
 	private String pointerBegin ; //du coup pointer mériterait d'être une classe avec sa propre méthode equals et une hierarchie de sous types
 	private String pointerEnd ;
 	
-	public Article getAnnotated() {
+	public Resource getAnnotated() {
 		return annotated;
 	}
-	public void setAnnotated(Article annotated) {
+	public void setAnnotated(Resource annotated) {
 		this.annotated = annotated;
 	}
 	public String getAnnotatedContent() {
@@ -46,15 +48,22 @@ public class Annotation extends Resource{
 	public void setPointerEnd(String pointerEnd) {
 		this.pointerEnd = pointerEnd;
 	}
-	public static List<Annotation> all() {
+	public static List<Annotation> allAnnotation() {
+		List<Annotation> annotations = new ArrayList<Annotation>() ;
 		if (MorphiaObject.datastore != null) {
-			return MorphiaObject.datastore.find(Annotation.class).asList();
+			List<Resource> ressources = MorphiaObject.datastore.find(Resource.class).asList();
+			for(Resource r : ressources) 
+			{
+				if(r.getClass().equals(Annotation.class)) annotations.add((Annotation)r);
+			}
+			return annotations ;
 		} else {
-			return new ArrayList<Annotation>();
+			return annotations ;
 		}
 	}
 	
 	public static void create(Annotation annotation) {
+		MorphiaObject.morphia.map(Resource.class);
 		MorphiaObject.datastore.save(annotation);
 	}
 
@@ -73,10 +82,10 @@ public class Annotation extends Resource{
 		return MorphiaObject.datastore.find(Annotation.class).field("_id").equal(new ObjectId(id)).get();
 	}
 	
-	public static List<Annotation> findByArticleId(String id)
+	public static List<Annotation> findByResourceId(String id)
 	{
-		Article article = Article.findById(id);
-		return MorphiaObject.datastore.find(Annotation.class).field("annotated").equal(article).asList();
+		Resource resource = Resource.findById(id);
+		return MorphiaObject.datastore.find(Annotation.class).field("annotated").equal(resource).asList();
 	}
 	
 }
