@@ -54,6 +54,13 @@ public class Application extends Controller {
 		return redirect(routes.Application.userAccounts());
 	}
 	
+	public static Result seeUserAccount(String nickname)
+	{
+		UserAccount userAccount = UserAccount.findByNickname(nickname);
+		if(userAccount == null) return redirect(routes.Application.index());
+		else return ok(views.html.user.render(userAccount));
+	}
+	
 	//Article
 	
 	public static Result articles() {
@@ -131,5 +138,4 @@ public class Application extends Controller {
 		if(annotation == null) return redirect(routes.Application.index());
 		else return ok(views.html.annotation.render(annotation));
 	}	
-	
 }

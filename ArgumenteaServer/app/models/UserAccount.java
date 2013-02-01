@@ -100,4 +100,8 @@ public class UserAccount
 		}
 	}
 	
+	public static UserAccount findByNickname(String nickname)
+	{
+		return MorphiaObject.datastore.find(UserAccount.class).field("nickname").equal(nickname).get();
+	}
 }
