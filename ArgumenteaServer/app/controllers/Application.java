@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.mongodb.MongoException.DuplicateKey;
+
 import models.Annotation;
 import models.Article;
 import models.Resource;
@@ -35,8 +37,15 @@ public class Application extends Controller {
 		if(filledForm.hasErrors()) {
 			return badRequest(views.html.users.render(UserAccount.all(), filledForm));
 		} else {
-			UserAccount.create(filledForm.get());
-			return redirect(routes.Application.userAccounts());
+			try{
+				UserAccount.create(filledForm.get());
+				return redirect(routes.Application.userAccounts());
+			}
+			catch(DuplicateKey exception)
+			{
+				return badRequest(views.html.users.render(UserAccount.all(), filledForm));
+			}
+			
 		}
 	}
 	
