@@ -21,6 +21,7 @@
   <h2>Add a new Annotation</h2>
   
   @form(routes.Application.newAnnotation()) {
+  	@inputText(annotationForm("title"), '_label -> "Title :")
      @textarea(
                 annotationForm("content"), 
                 '_label -> "Contenu ajouté", 'cols -> 50

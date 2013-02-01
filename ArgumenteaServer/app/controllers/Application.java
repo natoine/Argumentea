@@ -90,6 +90,7 @@ public class Application extends Controller {
 	public static Result newAnnotation() {
 		Map<String, String[]> requestData = request().body().asFormUrlEncoded() ;
 		Map<String,String> anyData = new HashMap();
+		anyData.put("title", requestData.get("title")[0]);
 		anyData.put("content", requestData.get("content")[0]);
 		anyData.put("annotatedContent", requestData.get("annotatedContent")[0]);
 		anyData.put("author.id", requestData.get("author.id")[0]);
