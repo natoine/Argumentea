@@ -1,5 +1,7 @@
 import java.net.UnknownHostException;
 
+import models.*;
+
 import play.GlobalSettings;
 import play.Logger;
 
@@ -22,6 +24,12 @@ public class Global extends GlobalSettings
 		}
 		MorphiaObject.morphia = new Morphia();
 		MorphiaObject.datastore = MorphiaObject.morphia.createDatastore(MorphiaObject.mongo, "test");
+		
+		MorphiaObject.morphia.map(Resource.class);
+		MorphiaObject.morphia.map(Article.class);
+		MorphiaObject.morphia.map(Annotation.class);
+		MorphiaObject.morphia.map(UserAccount.class);
+		
 		MorphiaObject.datastore.ensureIndexes();
 		MorphiaObject.datastore.ensureCaps();
 
