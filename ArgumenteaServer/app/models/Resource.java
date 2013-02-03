@@ -12,12 +12,10 @@ import play.data.validation.Constraints.Required;
 
 import com.google.code.morphia.annotations.Entity;
 import com.google.code.morphia.annotations.Id;
-import com.google.code.morphia.annotations.Polymorphic;
 import com.google.code.morphia.annotations.Reference;
 
 import controllers.MorphiaObject;
 
-@Polymorphic
 @Entity("Resources")
 public abstract class Resource {
 

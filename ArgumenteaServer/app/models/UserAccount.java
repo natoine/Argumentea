@@ -13,6 +13,7 @@ import play.data.validation.Constraints.Required;
 
 import com.google.code.morphia.annotations.Entity;
 import com.google.code.morphia.annotations.Id;
+import com.google.code.morphia.annotations.Indexed;
 
 import controllers.MorphiaObject;
 
@@ -21,11 +22,11 @@ public class UserAccount
 {
 	@Id
 	private ObjectId id;
-	@Required
+	@Indexed(unique = true) @Required 
 	private String nickname ;
 	private String firstname ;
 	private String lastname ;
-	@Email @Required
+	@Email @Required @Indexed(unique = true) 
 	private String email ;
 
 	public ObjectId getId() {
@@ -97,5 +98,10 @@ public class UserAccount
 		} else {
 			//Logger.debug("ID No Found: " + idToDelete);
 		}
+	}
+	
+	public static UserAccount findByNickname(String nickname)
+	{
+		return MorphiaObject.datastore.find(UserAccount.class).field("nickname").equal(nickname).get();
 	}
 }

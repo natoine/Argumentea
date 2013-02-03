@@ -9,6 +9,7 @@ GET     /                           controllers.Application.index()
 GET 	/users 						controllers.Application.userAccounts()
 POST 	/users 						controllers.Application.newUserAccount()
 POST    /users/:id/delete       	controllers.Application.deleteUserAccount(id: String)
+GET		/user/:nickname				controllers.Application.seeUserAccount(nickname: String)
 
 #Article
 GET		/articles					controllers.Application.articles()

@@ -7,19 +7,23 @@ import java.util.List;
 import org.bson.types.ObjectId;
 
 import com.google.code.morphia.annotations.Entity;
-import com.google.code.morphia.annotations.Polymorphic;
-
 import controllers.MorphiaObject;
 
-@Polymorphic
+
 @Entity("Resources")
 public class Article extends Resource{
 	
 	public static List<Article> allArticle() {
+		List<Article> articles = new ArrayList<Article>() ;
 		if (MorphiaObject.datastore != null) {
-			return MorphiaObject.datastore.find(Article.class).asList();
+			List<Resource> ressources = MorphiaObject.datastore.find(Resource.class).asList();
+			for(Resource r : ressources) 
+			{
+				if(r.getClass().equals(Article.class)) articles.add((Article)r);
+			}
+			return articles ;
 		} else {
-			return new ArrayList<Article>();
+			return articles ;
 		}
 	}
 
@@ -38,16 +42,7 @@ public class Article extends Resource{
 			//Logger.debug("ID No Found: " + idToDelete);
 		}
 	}
-	
-	/*public static Map<String,String> options() {
-		List<Article> as = allArticle();
-		LinkedHashMap<String,String> options = new LinkedHashMap<String,String>();
-		for(Article a: as) {
-			options.put(a.getId().toString(), a.getTitle());
-		}
-		return options;
-	}*/
-	
+		
 	public static Article findById(String id)
 	{
 		return MorphiaObject.datastore.find(Article.class).field("_id").equal(new ObjectId(id)).get();
