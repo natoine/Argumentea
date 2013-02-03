@@ -3,12 +3,14 @@
 @import helper._
 
 @main("annotation") {
-  
+ 
+<div id="zoneAnnotable"> 
   <h1>@annotation.getTitle</h1>
   
-  <div class="AnnotationContent">
+  <div class="ResourceContent" id="annotation-@annotation.getId">
   	@Html(annotation.getContent)
   </div>
+</div>
   
   <h2>Porte sur : <a href="@routes.Application.article(annotation.getAnnotated.getId.toString)">@annotation.getAnnotated.getTitle</a></h2>
   <div class="AnnotatedContent">

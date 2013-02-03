@@ -88,7 +88,7 @@ public class Application extends Controller {
 		if(article == null) return redirect(routes.Application.index());
 		else
 		{	List<Annotation> annotations = Annotation.findByResourceId(id);
-			return ok(views.html.article.render(article, annotations));
+			return ok(views.html.article.render(article, annotations, annotationForm));
 		}
 	}
 	
@@ -103,7 +103,8 @@ public class Application extends Controller {
 		return ok(views.html.annotations.render(annotations, annotationForm));
 	}
 	
-	public static Result newAnnotation() {
+	public static Result newAnnotation() 
+	{
 		Map<String, String[]> requestData = request().body().asFormUrlEncoded() ;
 		Map<String,String> anyData = new HashMap();
 		anyData.put("title", requestData.get("title")[0]);
