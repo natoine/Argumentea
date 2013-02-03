@@ -1,0 +1,25 @@
+.mask {
+    position: fixed;
+    background: #000;
+    z-index: 9000;
+    width: 100%;
+    left:0px;
+    top:0px;
+    display: none;
+}
+
+.boxes .window {
+    position: absolute;
+    z-index: 9999;
+    padding: 20px;
+    background: #FFF;
+    display: none;
+}
+
+.boxes {
+    margin-left:-20px;
+}
+
+.coloration {
+    background-color: yellow;
+}
