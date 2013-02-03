@@ -1,14 +1,12 @@
 package models;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.bson.types.ObjectId;
 
-import play.data.validation.Constraints.Required;
-
 import com.google.code.morphia.annotations.Entity;
-import com.google.code.morphia.annotations.Id;
 import com.google.code.morphia.annotations.Polymorphic;
 import com.google.code.morphia.annotations.Reference;
 
@@ -63,6 +61,7 @@ public class Annotation extends Resource{
 	}
 	
 	public static void create(Annotation annotation) {
+		annotation.setCreationDate(new Date());
 		MorphiaObject.morphia.map(Resource.class);
 		MorphiaObject.datastore.save(annotation);
 	}

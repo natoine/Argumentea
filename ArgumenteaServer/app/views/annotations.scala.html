@@ -9,6 +9,7 @@
   <ul>
     @for(annotation <- annotations) {
       <li><a href="@routes.Application.annotation(annotation.getId.toString)">Porte sur : @annotation.getAnnotated.getTitle</a>
+      <div class="creationDate">Created at : @annotation.getCreationDate</div>
       <div class="content">@Html(annotation.getContent)</div>
       <div class="annotatedContent">@Html(annotation.getAnnotatedContent)</div>
       @form(routes.Application.deleteAnnotation(annotation.getId.toString)) {

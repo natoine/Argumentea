@@ -1,18 +1,13 @@
 package models;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import org.bson.types.ObjectId;
 
-import play.data.validation.Constraints.Required;
-
 import com.google.code.morphia.annotations.Entity;
-import com.google.code.morphia.annotations.Id;
 import com.google.code.morphia.annotations.Polymorphic;
-import com.google.code.morphia.annotations.Reference;
 
 import controllers.MorphiaObject;
 
@@ -29,6 +24,7 @@ public class Article extends Resource{
 	}
 
 	public static void create(Article article) {
+		article.setCreationDate(new Date());
 		MorphiaObject.morphia.map(Resource.class);
 		MorphiaObject.datastore.save(article);
 	}

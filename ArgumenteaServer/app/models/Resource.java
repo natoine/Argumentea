@@ -1,6 +1,7 @@
 package models;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,8 @@ public abstract class Resource {
 	private UserAccount author ;
 	@Required
 	private String content ;
+	private Date creationDate ;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -52,6 +55,12 @@ public abstract class Resource {
 		this.content = content;
 	}
 	
+	public Date getCreationDate() {
+		return creationDate;
+	}
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
+	}
 	public static List<Resource> all() {
 		if (MorphiaObject.datastore != null) {
 			return MorphiaObject.datastore.find(Resource.class).asList();
