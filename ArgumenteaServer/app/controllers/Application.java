@@ -1,5 +1,6 @@
 package controllers;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import models.UserAccount;
 import play.*;
 import play.libs.Json;
 import play.mvc.*;
+import play.mvc.Http.Session;
 import play.data.Form;
 
 import views.html.*;
@@ -88,13 +90,14 @@ public class Application extends Controller {
 	
 	public static Result article(String id)
 	{
-		//TODO récupérer dans session les sélection
-		session().get("panier");
 		Article article = Article.findById(id);
 		if(article == null) return redirect(routes.Application.index());
 		else
-		{	List<Annotation> annotations = Annotation.findByResourceId(id);
-			return ok(views.html.article.render(article, annotations, annotationForm));
+		{
+			List<Selection> selections = getSelectionFromPanier(session());
+			//List<Annotation> annotations = Annotation.findByResourceId(id);
+			List<Annotation> annotations = new ArrayList<Annotation>();
+			return ok(views.html.article.render(article, annotations, annotationForm, selections));
 		}
 	}
 	
@@ -128,7 +131,7 @@ public class Application extends Controller {
 			return badRequest(views.html.annotations.render(Annotation.allAnnotation(), filledForm));
 		} else {
 			Annotation annotation = filledForm.get();
-			annotation.setAnnotated(annotated);
+		//	annotation.setAnnotated(annotated);
 			Annotation.create(annotation);
 			return redirect(routes.Application.annotations());
 		}
@@ -143,7 +146,11 @@ public class Application extends Controller {
 	{
 		Annotation annotation = Annotation.findById(id);
 		if(annotation == null) return redirect(routes.Application.index());
-		else return ok(views.html.annotation.render(annotation));
+		else 
+		{
+			List<Selection> selections = getSelectionFromPanier(session());
+			return ok(views.html.annotation.render(annotation, selections));
+		}
 	}	
 	
 	//Selections
@@ -151,21 +158,47 @@ public class Application extends Controller {
 	public static Result addSelectionPanier()
 	{
 		JsonNode json = request().body().asJson();
-		//String name = json.findPath("name").getTextValue();
-		//TODO create not persistant Selection with datas from JSON
-		if(name == null) // if ! allright send badRequest
+		String selectedContent = json.findPath("selectedContent").getTextValue();
+		String originId = json.findPath("originId").getTextValue();
+		String pointerBegin = json.findPath("pointerBegin").getTextValue();
+		String pointerEnd = json.findPath("pointerEnd").getTextValue();
+		if(selectedContent == null || originId == null || pointerBegin == null || pointerEnd == null
+				|| selectedContent.equals("") || originId.equals("") || pointerBegin.equals("") || pointerEnd.equals("")
+			) // if ! allright send badRequest
 		{
 		    return badRequest("Missing parameter [name]");
 		} 
 		else 
 		{
-			//Add in session jsonserialized List<selection> (get puis deserialize puis add)
-			session("panier", "");
+			//récupération du panier existant
+			List<Selection> selections = getSelectionFromPanier(session());
+			//Fabrication de la sélection reçue
 			Selection selection = new Selection();
-			JsonNode jsonselection = Json.toJson(selection);
-			Selection selection2 = Json.fromJson(jsonselection, Selection.class);
+			selection.setOrigin(Resource.findById(originId));
+			selection.setPointerBegin(pointerBegin);
+			selection.setPointerEnd(pointerEnd);
+			selection.setSelectedContent(selectedContent);
+			//Ajout au panier de la sélection reçue
+			selections.add(selection);
+			//Add in session jsonserialized List<selection> (get puis deserialize puis add)
+			session("panier", Json.toJson(selections).asText());
 			return ok("selection ajoutée au panier");
 		}
 	}
 	
+	private static List<Selection> getSelectionFromPanier(Session session)
+	{
+		List<Selection> selections = new ArrayList<Selection>();
+		String jsonSelections = session.get("panier");
+		if(jsonSelections != null && !jsonSelections.equals("")) 
+		{
+			JsonNode selectionsJsonArray = Json.parse(jsonSelections);
+			int nbSelections = selectionsJsonArray.size();
+			for(int cptSelection = 0 ; cptSelection < nbSelections ; cptSelection++)
+			{
+				selections.add(Json.fromJson(selectionsJsonArray.get(cptSelection) , Selection.class));
+			}
+		}
+		return selections ;
+	}
 }

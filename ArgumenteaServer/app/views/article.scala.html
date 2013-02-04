@@ -1,13 +1,12 @@
-@(article: Article, annotations: List[Annotation], annotationForm: Form[Annotation])
+@(article: Article, annotations: List[Annotation], annotationForm: Form[Annotation], selections: List[Selection])
 
 @import helper._
 
 @main(article.getTitle) {
 
-<div id="zoneAnnotable">  
   <h1>@article.getTitle</h1>
   
-
+<div id="zoneAnnotable">
   <div class="ResourceContent" id="article-@article.getId">
   	@Html(article.getContent)
   </div>
@@ -31,6 +30,21 @@
       </li>
     }
   </ul>
+  
+  
+<div class="panier">
+	<ul>
+	@for(selection <- selections) {
+		<li>
+		<div class="content">@Html(selection.getSelectedContent)</div>
+		<div class="creationDate">@selection.getCreationDate</div>
+		<div class="xpointerBegin">@selection.getPointerBegin</div>
+		<div class="xpointerEnd">@selection.getPointerEnd</div>
+		</li>
+	}
+	</ul>
+</div>
+  
 }
 
 <script type="text/javascript">

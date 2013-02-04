@@ -1,27 +1,46 @@
-@(annotation: Annotation)
+@(annotation: Annotation, selections: List[Selection])
 
 @import helper._
 
 @main("annotation") {
  
-<div id="zoneAnnotable"> 
+
   <h1>@annotation.getTitle</h1>
-  
+<div id="zoneAnnotable">   
   <div class="ResourceContent" id="annotation-@annotation.getId">
   	@Html(annotation.getContent)
   </div>
 </div>
   
-  <h2>Porte sur : <a href="@routes.Application.article(annotation.getAnnotated.getId.toString)">@annotation.getAnnotated.getTitle</a></h2>
-  <div class="AnnotatedContent">
-  	@Html(annotation.getAnnotatedContent)
-  </div>
-
+  <h2>Porte sur @annotation.getAnnotateds.size() sélection(s)</h2>
+  <div class="annotateds">
+	<ul>
+	@for(selection <- annotation.getAnnotateds) {
+		<li>
+		<div class="content">@Html(selection.getSelectedContent)</div>
+		<div class="creationDate">@selection.getCreationDate</div>
+		<div class="xpointerBegin">@selection.getPointerBegin</div>
+		<div class="xpointerEnd">@selection.getPointerEnd</div>
+		</li>
+	}
+	</ul>
+</div>
+  
 	<div class="author">
 		autheur : @annotation.getAuthor.getNickname
 	</div>
 	
-	<h3>Xpointers</h3>
-	<div>Begin : @annotation.getPointerBegin </div>
-	<div>End : @annotation.getPointerEnd </div>
+	
+	<div class="panier">
+	<ul>
+	@for(selection <- selections) {
+		<li>
+		<div class="content">@Html(selection.getSelectedContent)</div>
+		<div class="creationDate">@selection.getCreationDate</div>
+		<div class="xpointerBegin">@selection.getPointerBegin</div>
+		<div class="xpointerEnd">@selection.getPointerEnd</div>
+		</li>
+	}
+	</ul>
+</div>
 }

@@ -11,7 +11,20 @@
       <li><a href="@routes.Application.annotation(annotation.getId.toString)">Porte sur : @annotation.getAnnotated.getTitle</a>
       <div class="creationDate">Created at : @annotation.getCreationDate</div>
       <div class="content">@Html(annotation.getContent)</div>
-      <div class="annotatedContent">@Html(annotation.getAnnotatedContent)</div>
+     	<h2>Porte sur @annotation.getAnnotateds.size() sélection(s)</h2>
+	  <div class="annotateds">
+		<ul>
+		@for(selection <- annotation.getAnnotateds) {
+			<li>
+			<div class="content">@Html(selection.getSelectedContent)</div>
+			<div class="creationDate">@selection.getCreationDate</div>
+			<div class="xpointerBegin">@selection.getPointerBegin</div>
+			<div class="xpointerEnd">@selection.getPointerEnd</div>
+			</li>
+		}
+		</ul>
+	   </div>
+
       @form(routes.Application.deleteAnnotation(annotation.getId.toString)) {
                     <input type="submit" value="Delete">
                 }
@@ -27,22 +40,11 @@
                 annotationForm("content"), 
                 '_label -> "Contenu ajouté", 'cols -> 50
             )
-     @textarea(
-                annotationForm("annotatedContent"), 
-                '_label -> "Contenu annoté", 'cols -> 50
-            )
      @select(annotationForm("author.id"), 
         		options(UserAccount.options()),
         		'_default -> "--- Choose a user ---",
                 '_label -> "User"
                 )
-     @select(annotationForm("annotated.id"), 
-        		options(Resource.options()),
-        		'_default -> "--- Choose a resource ---",
-                '_label -> "Resource"
-                )
-     @inputText(annotationForm("pointerBegin"), '_label -> "Begin :")
-     @inputText(annotationForm("pointerEnd"), '_label -> "End :")
      <input type="submit" value="Create">
   
   }

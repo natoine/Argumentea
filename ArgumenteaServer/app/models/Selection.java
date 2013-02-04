@@ -20,7 +20,7 @@ public class Selection {
 	@Reference
 	private UserAccount creator ; // the guy that made the selection
 	@Required
-	private String content ;
+	private String selectedContent ;
 	private Date creationDate ;
 	@Reference @Required
 	private Resource origin ;
@@ -39,11 +39,11 @@ public class Selection {
 	public void setCreator(UserAccount creator) {
 		this.creator = creator;
 	}
-	public String getContent() {
-		return content;
+	public String getSelectedContent() {
+		return selectedContent;
 	}
-	public void setContent(String content) {
-		this.content = content;
+	public void setSelectedContent(String selectedContent) {
+		this.selectedContent = selectedContent;
 	}
 	public Date getCreationDate() {
 		return creationDate;
