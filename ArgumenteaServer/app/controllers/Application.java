@@ -4,13 +4,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.codehaus.jackson.JsonNode;
+
 import com.mongodb.MongoException.DuplicateKey;
 
 import models.Annotation;
 import models.Article;
 import models.Resource;
+import models.Selection;
 import models.UserAccount;
 import play.*;
+import play.libs.Json;
 import play.mvc.*;
 import play.data.Form;
 
@@ -84,6 +88,8 @@ public class Application extends Controller {
 	
 	public static Result article(String id)
 	{
+		//TODO récupérer dans session les sélection
+		session().get("panier");
 		Article article = Article.findById(id);
 		if(article == null) return redirect(routes.Application.index());
 		else
@@ -139,4 +145,27 @@ public class Application extends Controller {
 		if(annotation == null) return redirect(routes.Application.index());
 		else return ok(views.html.annotation.render(annotation));
 	}	
+	
+	//Selections
+	@BodyParser.Of(Json.class)
+	public static Result addSelectionPanier()
+	{
+		JsonNode json = request().body().asJson();
+		//String name = json.findPath("name").getTextValue();
+		//TODO create not persistant Selection with datas from JSON
+		if(name == null) // if ! allright send badRequest
+		{
+		    return badRequest("Missing parameter [name]");
+		} 
+		else 
+		{
+			//Add in session jsonserialized List<selection> (get puis deserialize puis add)
+			session("panier", "");
+			Selection selection = new Selection();
+			JsonNode jsonselection = Json.toJson(selection);
+			Selection selection2 = Json.fromJson(jsonselection, Selection.class);
+			return ok("selection ajoutée au panier");
+		}
+	}
+	
 }
