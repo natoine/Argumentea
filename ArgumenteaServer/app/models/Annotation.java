@@ -14,37 +14,26 @@ import controllers.MorphiaObject;
 @Entity("Resources")
 public class Annotation extends Resource{
 
+	private Date creationDate ;
 	@Reference
-	private Resource annotated ;
-	private String annotatedContent ;
-	private String pointerBegin ; //du coup pointer mériterait d'être une classe avec sa propre méthode equals et une hierarchie de sous types
-	private String pointerEnd ;
+	private List<Selection> annotateds ;
 	
-	public Resource getAnnotated() {
-		return annotated;
+	public List<Selection> getAnnotateds() {
+		return annotateds;
 	}
-	public void setAnnotated(Resource annotated) {
-		this.annotated = annotated;
+
+	public void setAnnotateds(List<Selection> annotateds) {
+		this.annotateds = annotateds;
 	}
-	public String getAnnotatedContent() {
-		return annotatedContent;
+
+	public Date getCreationDate() {
+		return creationDate;
 	}
-	public void setAnnotatedContent(String annotatedContent) {
-		this.annotatedContent = annotatedContent;
+
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
 	}
-	public String getPointerBegin() {
-		return pointerBegin;
-	}
-	public void setPointerBegin(String pointerBegin) {
-		this.pointerBegin = pointerBegin;
-	}
-	public String getPointerEnd() {
-		return pointerEnd;
-	}
-	public void setPointerEnd(String pointerEnd) {
-		this.pointerEnd = pointerEnd;
-	}
-	
+
 	public static List<Annotation> allAnnotation() {
 		List<Annotation> annotations = new ArrayList<Annotation>() ;
 		if (MorphiaObject.datastore != null) {
@@ -80,10 +69,10 @@ public class Annotation extends Resource{
 		return MorphiaObject.datastore.find(Annotation.class).field("_id").equal(new ObjectId(id)).get();
 	}
 	
-	public static List<Annotation> findByResourceId(String id)
+	/*public static List<Annotation> findByResourceId(String id)
 	{
 		Resource resource = Resource.findById(id);
 		return MorphiaObject.datastore.find(Annotation.class).field("annotated").equal(resource).asList();
-	}
+	}*/
 	
 }
