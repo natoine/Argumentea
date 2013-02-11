@@ -1,0 +1,23 @@
+@(lform: Form[Login])
+
+@import helper._
+
+@main("Login") {
+
+<div class="center">
+	<div class="box">
+		<h1>Connexion</h1>
+		
+		<p>Afin d'acc&eacute;der &agrave; Argumentea, veuillez vous connecter :</p>
+		
+		@helper.form(action = routes.Application.checkLoginInfos()) {
+			Pseudo : <br />
+			<input type="text" name="nickname" /><br /><br />
+			Mot de passe :<br />
+			<input type="password" name="password" /><br /><br />
+			<input type="submit" value="Se connecter" />
+		}
+	</div>
+</div>
+
+}

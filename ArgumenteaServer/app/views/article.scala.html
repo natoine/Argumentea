@@ -22,10 +22,10 @@
 	<h2>Annotations : </h2>
 	<ul>
     @for(annotation <- annotations) {
-      <li><a href="@routes.Application.annotation(annotation.getId.toString)">Porte sur : @annotation.getAnnotated.getTitle</a>
+      <li><a href="@routes.UserProfile.annotation(annotation.getId.toString)">Porte sur : @annotation.getAnnotated.getTitle</a>
       <div class="content">@Html(annotation.getContent)</div>
       <div class="annotatedContent">@Html(annotation.getAnnotatedContent)</div>
-      @form(routes.Application.deleteAnnotation(annotation.getId.toString)) {
+      @form(routes.UserProfile.deleteAnnotation(annotation.getId.toString)) {
                     <input type="submit" value="Delete">
                 }
       </li>

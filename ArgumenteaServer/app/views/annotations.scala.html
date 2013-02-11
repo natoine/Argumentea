@@ -8,11 +8,11 @@
   
   <ul>
     @for(annotation <- annotations) {
-      <li><a href="@routes.Application.annotation(annotation.getId.toString)">Porte sur : @annotation.getAnnotated.getTitle</a>
+      <li><a href="@routes.UserProfile.annotation(annotation.getId.toString)">Porte sur : @annotation.getAnnotated.getTitle</a>
       <div class="creationDate">Created at : @annotation.getCreationDate</div>
       <div class="content">@Html(annotation.getContent)</div>
       <div class="annotatedContent">@Html(annotation.getAnnotatedContent)</div>
-      @form(routes.Application.deleteAnnotation(annotation.getId.toString)) {
+      @form(routes.UserProfile.deleteAnnotation(annotation.getId.toString)) {
                     <input type="submit" value="Delete">
                 }
       </li>
@@ -21,7 +21,7 @@
   
   <h2>Add a new Annotation</h2>
   
-  @form(routes.Application.newAnnotation()) {
+  @form(routes.UserProfile.newAnnotation()) {
   	@inputText(annotationForm("title"), '_label -> "Title :")
      @textarea(
                 annotationForm("content"), 

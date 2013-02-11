@@ -8,10 +8,10 @@
   
   <ul>
     @for(article <- articles) {
-      <li><a href="@routes.Application.article(article.getId.toString)">@article.getTitle</a>
+      <li><a href="@routes.UserProfile.article(article.getId.toString)">@article.getTitle</a>
       <div class="creationDate">Created at : @article.getCreationDate</div>
       <div class="content">@Html(article.getContent)</div>
-      @form(routes.Application.deleteArticle(article.getId.toString)) {
+      @form(routes.UserProfile.deleteArticle(article.getId.toString)) {
                     <input type="submit" value="Delete">
                 }
       </li>
@@ -20,7 +20,7 @@
   
   <h2>Add a new Article</h2>
   
-  @form(routes.Application.newArticle()) {
+  @form(routes.UserProfile.newArticle()) {
      @inputText(articleForm("title"), '_label -> "Titre :")
      @textarea(
                 articleForm("content"), 

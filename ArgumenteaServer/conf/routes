@@ -4,25 +4,29 @@
 
 # Home page
 GET     /                           controllers.Application.index()
+GET 	/login						controllers.Application.login()
+POST 	/login						controllers.Application.checkLoginInfos()
 
 #Users
 GET 	/users 						controllers.Application.userAccounts()
 POST 	/users 						controllers.Application.newUserAccount()
-POST    /users/:id/delete       	controllers.Application.deleteUserAccount(id: String)
 GET		/user/:nickname				controllers.Application.seeUserAccount(nickname: String)
 
+#Admin
+POST    /admin/users/:id/delete     controllers.Admin.deleteUserAccount(id: String)
+
 #Article
-GET		/articles					controllers.Application.articles()
-POST 	/articles 					controllers.Application.newArticle()
-POST    /articles/:id/delete       	controllers.Application.deleteArticle(id: String)
-GET		/article/:id				controllers.Application.article(id: String)
+GET		/articles					controllers.UserProfile.articles()
+POST 	/articles 					controllers.UserProfile.newArticle()
+POST    /articles/:id/delete       	controllers.UserProfile.deleteArticle(id: String)
+GET		/article/:id				controllers.UserProfile.article(id: String)
 
 #Annotation
-GET		/annotations				controllers.Application.annotations()
-POST	/annotations				controllers.Application.newAnnotation()
-POST	/annotations/:id/delete		controllers.Application.deleteAnnotation(id: String)
-GET		/annotation/:id				controllers.Application.annotation(id: String)
-GET		/annotations/:id			controllers.Application.getAnnotationsOnArticle(id: String)
+GET		/annotations				controllers.UserProfile.annotations()
+POST	/annotations				controllers.UserProfile.newAnnotation()
+POST	/annotations/:id/delete		controllers.UserProfile.deleteAnnotation(id: String)
+GET		/annotation/:id				controllers.UserProfile.annotation(id: String)
+GET		/annotations/:id			controllers.UserProfile.getAnnotationsOnArticle(id: String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

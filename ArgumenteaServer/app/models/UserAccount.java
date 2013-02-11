@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.bson.types.ObjectId;
 
+import play.Logger;
 import play.data.validation.Constraints.Email;
 import play.data.validation.Constraints.Required;
 
@@ -16,19 +17,28 @@ import com.google.code.morphia.annotations.Id;
 import com.google.code.morphia.annotations.Indexed;
 
 import controllers.MorphiaObject;
+import controllers.Secured;
 
 @Entity
 public class UserAccount 
 {
 	@Id
 	private ObjectId id;
+	
 	@Indexed(unique = true) @Required 
 	private String nickname ;
+	
 	private String firstname ;
+	
 	private String lastname ;
+	
 	@Email @Required @Indexed(unique = true) 
 	private String email ;
+	
+	@Required
+	private String hashedPassword;
 
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -103,5 +113,37 @@ public class UserAccount
 	public static UserAccount findByNickname(String nickname)
 	{
 		return MorphiaObject.datastore.find(UserAccount.class).field("nickname").equal(nickname).get();
+	}
+
+	public String getHashedPassword() {
+		return hashedPassword;
+	}
+
+	public void setHashedPassword(String hashedPassword) {
+		this.hashedPassword = hashedPassword;
+	}
+	
+	public static UserAccount authenticate(String nickname, String password)
+	{
+		UserAccount user = MorphiaObject.datastore.find(UserAccount.class).field("nickname").equal(nickname).get();
+		String hashPassword = Secured.hash(password);
+		
+		if(user != null && hashPassword != null)
+		{
+			if(user.getHashedPassword().equals(hashPassword))
+			{
+				return user;
+			}
+			else
+				return null;
+		}
+		else
+			return null;
+	}
+	
+	public String validate()
+	{
+		Logger.info("Validate in UserAccont");
+		return "ok";
 	}
 }

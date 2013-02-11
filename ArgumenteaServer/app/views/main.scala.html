@@ -6,10 +6,27 @@
     <head>
         <title>@title</title>
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
-        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
-        <script src="@routes.Assets.at("javascripts/jquery-1.7.1.min.js")" type="text/javascript"></script>
     </head>
-    <body>
-        @content
+    <body>	
+    	<div id="navbar">
+    		<div id="leftSide" class="side">
+    			<div id="logo">Argumentea.com</div>
+    		</div>
+    		<div id="middleSide" class="side"></div>
+    		<div id="rightSide" class="side">
+    		
+    			@if(session.get("nickname") != null) {
+    				Bonjour @session.get("nickname")
+    			} else {
+    				<a href="/login">CONNEXION</a> / <a href="/register">INSCRIPTION</a>
+    			}
+    		
+    		</div>
+    		<div style="clear:both"></div>
+    	</div>
+    	
+    	<div id="content">
+    		@content
+    	</div>
     </body>
 </html>
