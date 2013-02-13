@@ -2,24 +2,27 @@
 
 @import helper._
 
-@main("Articles") {
+@main("Mes articles") {
   
-  <h1>Articles pr&eacute;sents en base de donn&eacute;es</h1>
+  <h1>Mes article(s)</h1>
   
   <p>@articles.size() entr&eacute;e(s) en base de donn&eacute;es</p>
   
     @for(article <- articles) {
       <div class="article">
 	      <h2><a href="@routes.UserProfile.article(article.getId.toString)">@article.getTitle</a></h2>
-	      <div class="creationDate">Cr&eacute;&eacute; le : @article.getCreationDate.format("dd/MM/yyyy") par <a href="/user/@article.getAuthor.getNickname">@article.getAuthor.getNickname</a></div>
+	      <div class="creationDate">Cr&eacute;&eacute; le : @article.getCreationDate.format("dd/MM/yyyy")</div>
 	      <div class="article_content">
+	      	
 	      	@if(article.getContent.size > 100) {
 	      		@Html(article.getContent.substring(0, 100))...
-	      		<p><a href="@routes.UserProfile.article(article.getId.toString)">Lire la suite</a></p>
 	      	} else {
 	      		@Html(article.getContent)
 	      	} 
-			</div>
+	      </div>
+	      @form(routes.UserProfile.deleteArticle(article.getId.toString)) {
+				<input type="submit" value="Delete">
+			}
 		</div>
     }
 	

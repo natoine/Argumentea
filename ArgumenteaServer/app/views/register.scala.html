@@ -1,0 +1,25 @@
+@(uaForm: Form[RegistrationForm])
+
+@import helper._
+
+@main("Creation de compte") {
+	
+	<div class="center">
+		<div class="box">
+	
+		<h1>Creer un nouveau compte</h1>
+		
+		@form(routes.Application.newUserAccount()) {
+	     @inputText(uaForm("nickname"), '_label -> "Pseudo :")
+	     @inputText(uaForm("firstname"), '_label -> "Prenom :")
+	     @inputText(uaForm("lastname"), '_label -> "Nom :")
+	     @inputText(uaForm("email"), '_label -> "Mel :")
+	     @inputText(uaForm("password"), '_label -> "Mot de passe : ")
+	     @inputText(uaForm("passwordRepeat"), '_label -> "Mot de passe (verification) : ")
+	     <input type="submit" value="Inscription">
+	    </div>
+	</div>
+  
+  }
+	
+}

@@ -1,6 +1,5 @@
 package models;
 
-
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -145,5 +144,10 @@ public class UserAccount
 	{
 		Logger.info("Validate in UserAccont");
 		return "ok";
+	}
+	
+	public boolean isSameUser(UserAccount user)
+	{
+		return user.getId().equals(this.getId());
 	}
 }

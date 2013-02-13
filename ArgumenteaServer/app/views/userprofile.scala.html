@@ -1,0 +1,57 @@
+@(articles : List[Article], annotations : List[Annotation])
+
+@main(session.get("nickname")) {
+	<h1>Espace personnel</h1>
+	
+	<div class="center">
+	
+		<div class="box">
+			<h2>Mes derniers articles</h2>
+			
+			@if(articles.size() != 0) {
+				<ul>
+					@for((article, i) <- articles.zipWithIndex) {
+						@if(i % 2 == 0) {
+									<li class="alt">
+								} else {
+									<li>
+								}
+							<a href="@routes.UserProfile.article(article.getId.toString)">@article.getTitle</a> - (@article.getCreationDate.format("dd/MM/yyyy"))
+						</li>
+					}
+				</ul>
+			} else {
+				<p>Aucun article</p>
+			}
+			
+			<ul>
+				<li class="nav"><a href="/newArticle">Cr&eacute;er un article</a></li>
+				<li class="nav"><a href="/myArticles">Voir mes articles</a></li>
+				<li class="nav"><a href="/articles">Voir tous les articles en base de donn&eacute;es</a></li>
+			</ul>
+			
+		</div><div class="box">
+			<h2>Mes derni&egrave;res annotations</h2>
+				@if(annotations.size() != 0) {
+					<ul>
+						@for((annotation, i) <- annotations.zipWithIndex) {
+							@if(i % 2 == 0) {
+								<li class="alt">
+							} else {
+								<li>
+							}
+								<a href="@routes.UserProfile.annotation(annotation.getId.toString)">Porte sur : @annotation.getAnnotated.getTitle</a> - ()@annotation.getCreationDate)
+							</li>
+							@i++
+						}
+					</ul>
+				} else {
+					<p>Aucune annotation</p>
+				}
+			<ul>
+				<li class="nav"><a href="/newAnnotation">Cr&eacute;er une annotation</a></li>
+			</ul>	
+		</div>
+		
+	</div>
+}

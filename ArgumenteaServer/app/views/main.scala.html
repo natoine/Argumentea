@@ -1,4 +1,4 @@
-@(title: String)(content: Html)
+@(title: String, navbar : Html = Html(""))(content: Html)
 
 <!DOCTYPE html>
 
@@ -10,13 +10,13 @@
     <body>	
     	<div id="navbar">
     		<div id="leftSide" class="side">
-    			<div id="logo">Argumentea.com</div>
+    			<div id="logo"><a href="/">Argumentea.com</a></div>
     		</div>
-    		<div id="middleSide" class="side"></div>
+    		<div id="middleSide" class="side">@navbar</div>
     		<div id="rightSide" class="side">
     		
     			@if(session.get("nickname") != null) {
-    				Bonjour @session.get("nickname")
+    				Bonjour <a href="/myProfile">@session.get("nickname")</a>
     			} else {
     				<a href="/login">CONNEXION</a> / <a href="/register">INSCRIPTION</a>
     			}

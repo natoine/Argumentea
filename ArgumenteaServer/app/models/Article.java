@@ -11,11 +11,14 @@ import controllers.MorphiaObject;
 
 
 @Entity("Resources")
-public class Article extends Resource{
+public class Article extends Resource 
+{
 	
-	public static List<Article> allArticle() {
+	public static List<Article> allArticle() 
+	{
 		List<Article> articles = new ArrayList<Article>() ;
-		if (MorphiaObject.datastore != null) {
+		if (MorphiaObject.datastore != null) 
+		{
 			List<Resource> ressources = MorphiaObject.datastore.find(Resource.class).asList();
 			for(Resource r : ressources) 
 			{
@@ -26,14 +29,35 @@ public class Article extends Resource{
 			return articles ;
 		}
 	}
-
-	public static void create(Article article) {
+	
+	public static List<Article> findByAuthor(UserAccount author)
+	{
+		List<Article> articles = new ArrayList<Article>();
+		
+		if (MorphiaObject.datastore != null) {
+			List<Resource> ressources = MorphiaObject.datastore.find(Resource.class).asList();
+			for(Resource r : ressources) 
+			{
+				if(r.getClass().equals(Article.class) && r.getAuthor().isSameUser(author))
+				{
+					articles.add((Article)r);
+				}
+			}
+			return articles ;
+		} else {
+			return articles ;
+		}
+	}
+	
+	public static void create(Article article) 
+	{
 		article.setCreationDate(new Date());
 		MorphiaObject.morphia.map(Resource.class);
 		MorphiaObject.datastore.save(article);
 	}
 
-	public static void delete(String idToDelete) {
+	public static void delete(String idToDelete) 
+	{
 		Article toDelete = MorphiaObject.datastore.find(Article.class).field("_id").equal(new ObjectId(idToDelete)).get();
 		if (toDelete != null) {
 			//Logger.info("toDelete: " + toDelete);

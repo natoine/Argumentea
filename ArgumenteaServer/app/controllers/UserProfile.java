@@ -19,9 +19,28 @@ public class UserProfile extends Controller
 	protected static Form<Article> articleForm = form(Article.class);
 	protected static Form<Annotation> annotationForm = form(Annotation.class);
 	
+	public static Result index()
+	{
+		UserAccount currentUser = UserAccount.findByNickname(session("nickname"));
+		List<Annotation> annotations = Annotation.allAnnotation();
+		
+		return ok(views.html.userprofile.render(Article.findByAuthor(currentUser), annotations));
+	}
+	
 	public static Result articles() 
 	{
-		return ok(views.html.articles.render(Article.allArticle(), articleForm));
+		return ok(views.html.articles.render(Article.allArticle()));
+	}
+	
+	public static Result myArticles()
+	{
+		UserAccount currentUser = UserAccount.findByNickname(session("nickname"));
+		return ok(views.html.myArticles.render(Article.findByAuthor(currentUser)));
+	}
+	
+	public static Result newArticleForm()
+	{
+		return ok(views.html.newArticleForm.render(articleForm));
 	}
 
 	public static Result newArticle() 
@@ -29,11 +48,20 @@ public class UserProfile extends Controller
 		Form<Article> filledForm = articleForm.bindFromRequest();
 		if(filledForm.hasErrors()) 
 		{
-			return badRequest(views.html.articles.render(Article.allArticle(), filledForm));
+			return badRequest(views.html.newArticleForm.render(filledForm));
 		} 
 		else 
 		{
-			Article.create(filledForm.get());
+			Article article = filledForm.get();
+						
+			System.out.println("Session = " + session("nickname"));
+			
+			UserAccount author = UserAccount.findByNickname(session("nickname"));
+			
+			System.out.println("Author ? " + author);
+			
+			article.setAuthor(author);
+			Article.create(article);
 			return redirect(routes.UserProfile.articles());
 		}
 	}
@@ -71,7 +99,7 @@ public class UserProfile extends Controller
 	public static Result newAnnotation() 
 	{
 		Map<String, String[]> requestData = request().body().asFormUrlEncoded() ;
-		Map<String,String> anyData = new HashMap();
+		Map<String, String> anyData = new HashMap<String, String>();
 		anyData.put("title", requestData.get("title")[0]);
 		anyData.put("content", requestData.get("content")[0]);
 		anyData.put("annotatedContent", requestData.get("annotatedContent")[0]);

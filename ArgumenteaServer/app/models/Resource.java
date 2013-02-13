@@ -21,34 +21,45 @@ public abstract class Resource {
 
 	@Id
 	private ObjectId id;
+	
 	private String title ;
+	
 	@Reference
 	private UserAccount author ;
+	
 	@Required
 	private String content ;
+	
 	private Date creationDate ;
 	
 	public ObjectId getId() {
 		return id;
 	}
+	
 	public void setId(ObjectId id) {
 		this.id = id;
 	}
+	
 	public String getTitle() {
 		return title;
 	}
+	
 	public void setTitle(String title) {
 		this.title = title;
 	}
+	
 	public UserAccount getAuthor() {
 		return author;
 	}
+	
 	public void setAuthor(UserAccount author) {
 		this.author = author;
 	}
+	
 	public String getContent() {
 		return content;
 	}
+	
 	public void setContent(String content) {
 		this.content = content;
 	}
@@ -56,9 +67,11 @@ public abstract class Resource {
 	public Date getCreationDate() {
 		return creationDate;
 	}
+	
 	public void setCreationDate(Date creationDate) {
 		this.creationDate = creationDate;
 	}
+	
 	public static List<Resource> all() {
 		if (MorphiaObject.datastore != null) {
 			return MorphiaObject.datastore.find(Resource.class).asList();

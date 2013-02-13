@@ -1,0 +1,17 @@
+@(articleForm: Form[Article])
+
+@import helper._
+
+@main("Creer un nouvel article") {
+
+<h1>Cr&eacute;er un nouvel article</h1>
+  
+	@form(routes.UserProfile.newArticle()) {
+		@inputText(articleForm("title"), '_label -> "Titre :")
+		@textarea(
+			articleForm("content"), 
+			'_label -> "Contenu", 'cols -> 50
+		)
+		<input type="submit" value="Cr&eacute;er" />
+	}
+}
