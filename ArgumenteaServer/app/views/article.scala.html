@@ -4,19 +4,16 @@
 
 @main(article.getTitle) {
 
-<div id="zoneAnnotable">  
-  <h1>@article.getTitle</h1>
-  
-
+  <h1>@article.getTitle</h1>  
+<div id="zoneAnnotable">
   <div class="ResourceContent" id="article-@article.getId">
   	@Html(article.getContent)
   </div>
-
+</div>
 	<div class="author">
 		@article.getAuthor.getNickname
 	</div>
-
-</div>	
+	
 	<button class="btn btn-select" type ="button">Sélectionner</button>
 	
 	<h2>Annotations : </h2>
