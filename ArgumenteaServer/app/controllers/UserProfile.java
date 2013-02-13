@@ -54,11 +54,7 @@ public class UserProfile extends Controller
 		{
 			Article article = filledForm.get();
 						
-			System.out.println("Session = " + session("nickname"));
-			
 			UserAccount author = UserAccount.findByNickname(session("nickname"));
-			
-			System.out.println("Author ? " + author);
 			
 			article.setAuthor(author);
 			Article.create(article);

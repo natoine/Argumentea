@@ -16,9 +16,13 @@ public class Annotation extends Resource{
 
 	@Reference
 	private Resource annotated ;
+	
 	private String annotatedContent ;
+	
 	private String pointerBegin ; //du coup pointer mériterait d'être une classe avec sa propre méthode equals et une hierarchie de sous types
+	
 	private String pointerEnd ;
+	
 	
 	public Resource getAnnotated() {
 		return annotated;

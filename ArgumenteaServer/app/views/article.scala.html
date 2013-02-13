@@ -4,30 +4,35 @@
 
 @main(article.getTitle) {
 
-  <h1>@article.getTitle</h1>  
-<div id="zoneAnnotable">
-  <div class="ResourceContent" id="article-@article.getId">
-  	@Html(article.getContent)
-  </div>
-</div>
-	<div class="author">
-		@article.getAuthor.getNickname
+	<h1>@article.getTitle</h1>
+  
+	<div class="article">
+		<div class="creationDate">
+			le @article.getCreationDate.format("dd/MM/yyyy") par <a href="/user/@article.getAuthor.getNickname">@article.getAuthor.getNickname</a>
+		</div>
+	
+		<div id="zoneAnnotable">
+			<div class="ResourceContent" id="article-@article.getId">
+				@Html(article.getContent)
+			</div>
+		</div>
+		
+		<button class="btn btn-select" type ="button">S&eacute;lectionner</button>
+		
+		<h2>Annotations : </h2>
+		<ul>
+		    @for(annotation <- annotations) {
+				<li>
+		      		<a href="@routes.UserProfile.annotation(annotation.getId.toString)">Porte sur : @annotation.getAnnotated.getTitle</a>
+					<div class="content">@Html(annotation.getContent)</div>
+					<div class="annotatedContent">@Html(annotation.getAnnotatedContent)</div>
+					@form(routes.UserProfile.deleteAnnotation(annotation.getId.toString)) {
+						<input type="submit" value="Delete" />
+					}
+				</li>
+		    }
+		</ul>
 	</div>
-	
-	<button class="btn btn-select" type ="button">Sélectionner</button>
-	
-	<h2>Annotations : </h2>
-	<ul>
-    @for(annotation <- annotations) {
-      <li><a href="@routes.UserProfile.annotation(annotation.getId.toString)">Porte sur : @annotation.getAnnotated.getTitle</a>
-      <div class="content">@Html(annotation.getContent)</div>
-      <div class="annotatedContent">@Html(annotation.getAnnotatedContent)</div>
-      @form(routes.UserProfile.deleteAnnotation(annotation.getId.toString)) {
-                    <input type="submit" value="Delete">
-                }
-      </li>
-    }
-  </ul>
 }
 
 <script type="text/javascript">

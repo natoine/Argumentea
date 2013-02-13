@@ -194,3 +194,13 @@ li.nav:hover
 	font-size:0.8em;
 	color:#333;
 }
+
+#zoneAnnotable
+{
+	margin-top:20px;
+}
+
+.btn
+{
+	margin:20px;
+}
