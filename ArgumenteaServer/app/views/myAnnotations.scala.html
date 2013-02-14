@@ -1,0 +1,22 @@
+@(annotations: List[Annotation])
+
+@import helper._
+
+@main("Mes annotations") {
+  
+		<h1>Mes annotation(s)</h1>
+  
+		<p>@annotations.size() entr&eacute;e(s) en base de donn&eacute;es</p>
+  
+		@for(annotation <- annotations) {
+		<div class="box_wide">
+			<h2><a href="@routes.UserProfile.annotation(annotation.getId.toString)">Porte sur : @annotation.getAnnotated.getTitle</a></h2>
+			<div class="meta_infos">Cr&eacute;&eacute;e le : @annotation.getCreationDate.format("dd/MM/yyy")</div>
+			<div class="content">@Html(annotation.getContent)</div>
+			<div class="annotatedContent">@Html(annotation.getAnnotatedContent)</div>
+			@form(routes.UserProfile.deleteAnnotation(annotation.getId.toString)) {
+				<input type="submit" value="Supprimer" class="btn" />
+			}
+		</div>
+    }
+}

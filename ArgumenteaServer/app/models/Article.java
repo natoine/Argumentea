@@ -30,25 +30,6 @@ public class Article extends Resource
 		}
 	}
 	
-	public static List<Article> findByAuthor(UserAccount author)
-	{
-		List<Article> articles = new ArrayList<Article>();
-		
-		if (MorphiaObject.datastore != null) {
-			List<Resource> ressources = MorphiaObject.datastore.find(Resource.class).asList();
-			for(Resource r : ressources) 
-			{
-				if(r.getClass().equals(Article.class) && r.getAuthor().isSameUser(author))
-				{
-					articles.add((Article)r);
-				}
-			}
-			return articles ;
-		} else {
-			return articles ;
-		}
-	}
-	
 	public static void create(Article article) 
 	{
 		article.setCreationDate(new Date());
@@ -70,5 +51,24 @@ public class Article extends Resource
 	public static Article findById(String id)
 	{
 		return MorphiaObject.datastore.find(Article.class).field("_id").equal(new ObjectId(id)).get();
+	}
+	
+	public static List<Article> findByAuthor(UserAccount author)
+	{
+		List<Article> articles = new ArrayList<Article>();
+		
+		if (MorphiaObject.datastore != null) {
+			List<Resource> ressources = MorphiaObject.datastore.find(Resource.class).asList();
+			for(Resource r : ressources) 
+			{
+				if(r.getClass().equals(Article.class) && r.getAuthor().isSameUser(author))
+				{
+					articles.add((Article)r);
+				}
+			}
+			return articles ;
+		} else {
+			return articles ;
+		}
 	}
 }

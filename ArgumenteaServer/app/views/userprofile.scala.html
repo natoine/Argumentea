@@ -40,16 +40,15 @@
 							} else {
 								<li>
 							}
-								<a href="@routes.UserProfile.annotation(annotation.getId.toString)">Porte sur : @annotation.getAnnotated.getTitle</a> - ()@annotation.getCreationDate)
+								<a href="@routes.UserProfile.annotation(annotation.getId.toString)">Porte sur : @annotation.getAnnotated.getTitle</a> - (@annotation.getCreationDate.format("dd/MM/yyyy"))
 							</li>
-							@i++
 						}
 					</ul>
 				} else {
 					<p>Aucune annotation</p>
 				}
 			<ul>
-				<li class="nav"><a href="/annotations">Voir toutes mes annotations</a></li>
+				<li class="nav"><a href="/myAnnotations">Voir toutes mes annotations</a></li>
 			</ul>	
 		</div>
 		

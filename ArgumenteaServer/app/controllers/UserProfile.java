@@ -24,9 +24,7 @@ public class UserProfile extends Controller
 	public static Result index()
 	{
 		UserAccount currentUser = UserAccount.findByNickname(session("nickname"));
-		List<Annotation> annotations = Annotation.allAnnotation();
-		
-		return ok(views.html.userprofile.render(Article.findByAuthor(currentUser), annotations));
+		return ok(views.html.userprofile.render(Article.findByAuthor(currentUser), Annotation.findByAuthor(currentUser)));
 	}
 	
 	public static Result articles() 
@@ -60,24 +58,25 @@ public class UserProfile extends Controller
 			
 			article.setAuthor(author);
 			Article.create(article);
-			return redirect(routes.UserProfile.articles());
+			return redirect(routes.UserProfile.myArticles());
 		}
 	}
 	
 	public static Result deleteArticle(String id) 
 	{
 		// vérifier que l'article appartient bien a la personne connectée
-		
 		Article.delete(id);
 		return redirect(routes.UserProfile.articles());
 	}
 	
-	public static Result article(String id)
+	public static Result article(String id, Integer page)
 	{
 		Article article = Article.findById(id);
 		if(article == null) return redirect(routes.Application.index());
 		else
-		{	List<Annotation> annotations = Annotation.findByResourceId(id);
+		{	
+			//List<Annotation> annotations = Annotation.findByResourceId(id);
+			List<Annotation> annotations = Annotation.findByResourceId(id, page * 10, page * 10 + 10);
 			return ok(views.html.article.render(article, annotations, annotationForm));
 		}
 	}
@@ -167,5 +166,11 @@ public class UserProfile extends Controller
 		Annotation annotation = Annotation.findById(id);
 		if(annotation == null) return redirect(routes.Application.index());
 		else return ok(views.html.annotation.render(annotation));
-	}	
+	}
+	
+	public static Result myAnnotations()
+	{
+		UserAccount currentUser = UserAccount.findByNickname(session("nickname"));
+		return ok(views.html.myAnnotations.render(Annotation.findByAuthor(currentUser)));
+	}
 }

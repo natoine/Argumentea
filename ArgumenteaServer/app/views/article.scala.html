@@ -6,8 +6,8 @@
 
 	<h1>@article.getTitle</h1>
   
-	<div class="article">
-		<div class="creationDate">
+	<div class="box_wide">
+		<div class="meta_infos">
 			le @article.getCreationDate.format("dd/MM/yyyy") par <a href="/user/@article.getAuthor.getNickname">@article.getAuthor.getNickname</a>
 		</div>
 	
@@ -19,16 +19,23 @@
 		
 		<h2>Annotations : </h2>
 		<ul>
-		    @for(annotation <- annotations) {
-				<li>
-		      		<a href="@routes.UserProfile.annotation(annotation.getId.toString)">Porte sur : @annotation.getAnnotated.getTitle</a>
-					<div class="content">@Html(annotation.getContent)</div>
-					<div class="annotatedContent">@Html(annotation.getAnnotatedContent)</div>
+		    @for((annotation, i) <- annotations.zipWithIndex) {
+				@if(i % 2 == 0) {
+					<li class="alt">
+				} else {
+					<li>
+				}
+				<div class="meta_infos">par <a href="/user/@annotation.getAuthor.getNickname">@annotation.getAuthor.getNickname</a></div>
+				<div class="content">@Html(annotation.getContent)</div>
+				<div class="annotatedContent">@Html(annotation.getAnnotatedContent)</div>
+				
+				@if(annotation.getAuthor.getNickname.equals(session.get("nickname"))) {
 					@form(routes.UserProfile.deleteAnnotation(annotation.getId.toString)) {
-						<input type="submit" value="Delete" />
+						<input type="submit" value="Supprimer cette annotation" class="btn" />
 					}
-				</li>
-		    }
+				}
+			</li>
+		}
 		</ul>
 	</div>
 
@@ -43,7 +50,7 @@
 }
 
 <script type="text/javascript">
-$(document).ready(function($){
+$(document).ready(function($) {
 	
 	$("body").ajaxError(function(event, jqXHR, ajaxSettings, thrownError){
             alert("ERROR : " + thrownError);
