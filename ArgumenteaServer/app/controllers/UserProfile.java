@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.codehaus.jackson.JsonNode;
+
 import models.Annotation;
 import models.Article;
 import models.Resource;
@@ -90,6 +92,39 @@ public class UserProfile extends Controller
 	{
 		List<Annotation> annotations = Annotation.findByResourceId(id);		
 		return ok(views.html.annotations.render(annotations, annotationForm));
+	}
+	
+	public static Result newAnnotationJson()
+	{
+		System.out.println("received request");
+		JsonNode json = request().body().asJson();
+		System.out.println("json :" + json);
+		Map<String, String> anyData = new HashMap<String, String>();
+		anyData.put("pointerBegin", json.get("pointerBegin").asText()) ;
+		anyData.put("pointerEnd", json.get("pointerEnd").asText());
+		anyData.put("title", json.get("title").asText());
+		anyData.put("content", json.get("content").asText());
+		anyData.put("annotatedContent", json.get("annotatedContent").asText());
+		UserAccount author = UserAccount.findByNickname(session("nickname"));
+		anyData.put("author.id", author.getId().toString());
+		String url = json.get("currentUrl").asText();
+		String[] splittedUrl = url.split("/");
+		String annotatedId = splittedUrl[splittedUrl.length - 1] ;
+		System.out.println("annotatedId : " + annotatedId);
+		Resource annotated = Resource.findById(annotatedId);
+		//anyData.put("annotated.id", annotatedId);
+		Form<Annotation> filledForm = annotationForm.bind(anyData);
+		if(filledForm.hasErrors()) 
+		{
+			return badRequest();
+		}
+		else
+		{
+			Annotation annotation = filledForm.get();
+			annotation.setAnnotated(annotated);
+			Annotation.create(annotation);
+			return ok();
+		}
 	}
 	
 	public static Result newAnnotation() 

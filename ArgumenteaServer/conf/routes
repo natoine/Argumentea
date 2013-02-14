@@ -28,6 +28,7 @@ GET 	/newArticle					controllers.UserProfile.newArticleForm()
 #Annotation
 GET		/annotations				controllers.UserProfile.annotations()
 POST	/annotations				controllers.UserProfile.newAnnotation()
+POST	/annotationsJSON			controllers.UserProfile.newAnnotationJson()
 POST	/annotations/:id/delete		controllers.UserProfile.deleteAnnotation(id: String)
 GET		/annotation/:id				controllers.UserProfile.annotation(id: String)
 GET		/annotations/:id			controllers.UserProfile.getAnnotationsOnArticle(id: String)
