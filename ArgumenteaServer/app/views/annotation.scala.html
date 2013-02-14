@@ -4,23 +4,30 @@
 
 @main("annotation") {
  
-  <h1>@annotation.getTitle</h1>
-<div id="zoneAnnotable">  
-  <div class="ResourceContent" id="annotation-@annotation.getId">
-  	@Html(annotation.getContent)
-  </div>
-</div>
-  
-  <h2>Porte sur : <a href="@routes.UserProfile.article(annotation.getAnnotated.getId.toString)">@annotation.getAnnotated.getTitle</a></h2>
-  <div class="AnnotatedContent">
-  	@Html(annotation.getAnnotatedContent)
-  </div>
+	<h1>@annotation.getTitle</h1>
 
-	<div class="author">
-		autheur : @annotation.getAuthor.getNickname
+	<div class="box_wide_big">
+		<div class="meta_infos">
+			autheur : @annotation.getAuthor.getNickname
+		</div>
+	
+		<div id="zoneAnnotable">  
+			<div class="ResourceContent" id="annotation-@annotation.getId">
+				@Html(annotation.getContent)
+			</div>
+		</div>
+	  
+		<h2>Porte sur : <a href="@routes.UserProfile.article(annotation.getAnnotated.getId.toString)">@annotation.getAnnotated.getTitle</a></h2>
+		<div class="AnnotatedContent">
+			@Html(annotation.getAnnotatedContent)
+		</div>
+		
+		@if(annotation.getAuthor.getNickname.equals(session.get("nickname"))) {
+			@form(routes.UserProfile.deleteAnnotation(annotation.getId.toString)) {
+				<input type="submit" value="Supprimer cette annotation" class="btn" />
+			}
+		}
 	</div>
 	
-	<h3>Xpointers</h3>
-	<div>Begin : @annotation.getPointerBegin </div>
-	<div>End : @annotation.getPointerEnd </div>
+	
 }

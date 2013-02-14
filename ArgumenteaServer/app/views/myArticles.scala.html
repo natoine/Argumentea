@@ -9,9 +9,9 @@
   <p>@articles.size() entr&eacute;e(s) en base de donn&eacute;es</p>
   
     @for(article <- articles) {
-      <div class="article">
+      <div class="box_wide">
 	      <h2><a href="@routes.UserProfile.article(article.getId.toString)">@article.getTitle</a></h2>
-	      <div class="creationDate">Cr&eacute;&eacute; le : @article.getCreationDate.format("dd/MM/yyyy")</div>
+	      <div class="meta_infos">Cr&eacute;&eacute; le : @article.getCreationDate.format("dd/MM/yyyy")</div>
 	      <div class="article_content">
 	      	
 	      	@if(article.getContent.size > 100) {
@@ -21,10 +21,14 @@
 	      	} 
 	      </div>
 	      @form(routes.UserProfile.deleteArticle(article.getId.toString)) {
-				<input type="submit" value="Delete">
+				<input type="submit" value="Supprimer l'article" class="btn">
 			}
 		</div>
     }
 	
-	<p><a href="/newArticle">Cr&eacute;er un nouvel article</a></p>
+	<h3>Options :</h3>
+	
+	<ul>
+		<li class="nav"><a href="/newArticle">Cr&eacute;er un nouvel article</a></li>
+	</ul>
 }

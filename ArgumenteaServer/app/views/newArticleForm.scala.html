@@ -4,14 +4,27 @@
 
 @main("Creer un nouvel article") {
 
+<script type="text/javascript">
+	$().ready(function() 
+	{
+		var opts = {
+			lang 			: 'fr',
+			styleWidthCSS 	: false,
+			height 			: 400,
+			toolbar 		: 'compact',
+			allowSource 	: false
+		}	
+		
+		$("#text").elrte(opts);
+	});
+</script>
+
 <h1>Cr&eacute;er un nouvel article</h1>
   
 	@form(routes.UserProfile.newArticle()) {
-		@inputText(articleForm("title"), '_label -> "Titre :")
-		@textarea(
-			articleForm("content"), 
-			'_label -> "Contenu", 'cols -> 50
-		)
-		<input type="submit" value="Cr&eacute;er" />
+		<input type="text" name="title" value='@articleForm("title").value' style="width:100%;margin-bottom:20px;" />
+		
+		<textarea id="text" name="content">@articleForm("content").value</textarea>
+		<input type="submit" value="Cr&eacute;er l'article" />
 	}
 }

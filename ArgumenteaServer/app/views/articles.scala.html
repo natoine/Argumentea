@@ -9,9 +9,9 @@
   <p>@articles.size() entr&eacute;e(s) en base de donn&eacute;es</p>
   
     @for(article <- articles) {
-      <div class="article">
+      <div class="box_wide">
 	      <h2><a href="@routes.UserProfile.article(article.getId.toString)">@article.getTitle</a></h2>
-	      <div class="creationDate">Cr&eacute;&eacute; le : @article.getCreationDate.format("dd/MM/yyyy") par <a href="/user/@article.getAuthor.getNickname">@article.getAuthor.getNickname</a></div>
+	      <div class="meta_infos">Cr&eacute;&eacute; le : @article.getCreationDate.format("dd/MM/yyyy") par <a href="/user/@article.getAuthor.getNickname">@article.getAuthor.getNickname</a></div>
 	      <div class="article_content">
 	      	@if(article.getContent.size > 100) {
 	      		@Html(article.getContent.substring(0, 100))...
@@ -20,6 +20,12 @@
 	      		@Html(article.getContent)
 	      	} 
 			</div>
+			
+			@if(article.getAuthor.getNickname.equals(session.get("nickname"))) {
+				@form(routes.UserProfile.deleteArticle(article.getId.toString)) {
+					<input type="submit" value="Supprimer l'article" class="btn">
+				}
+			}
 		</div>
     }
 	

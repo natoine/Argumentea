@@ -27,24 +27,31 @@ public class Annotation extends Resource{
 	public Resource getAnnotated() {
 		return annotated;
 	}
+	
 	public void setAnnotated(Resource annotated) {
 		this.annotated = annotated;
 	}
+	
 	public String getAnnotatedContent() {
 		return annotatedContent;
 	}
+	
 	public void setAnnotatedContent(String annotatedContent) {
 		this.annotatedContent = annotatedContent;
 	}
+	
 	public String getPointerBegin() {
 		return pointerBegin;
 	}
+	
 	public void setPointerBegin(String pointerBegin) {
 		this.pointerBegin = pointerBegin;
 	}
+	
 	public String getPointerEnd() {
 		return pointerEnd;
 	}
+	
 	public void setPointerEnd(String pointerEnd) {
 		this.pointerEnd = pointerEnd;
 	}
@@ -90,4 +97,33 @@ public class Annotation extends Resource{
 		return MorphiaObject.datastore.find(Annotation.class).field("annotated").equal(resource).asList();
 	}
 	
+	public static List<Annotation> findByResourceId(String id, int start, int end)
+	{
+		return Annotation.findByResourceId(id).subList(start, end);
+	}
+	
+	public static List<Annotation> findByAuthor(UserAccount author)
+	{
+		List<Annotation> annotations = new ArrayList<Annotation>();
+		
+		if (MorphiaObject.datastore != null) {
+			List<Resource> ressources = MorphiaObject.datastore.find(Resource.class).asList();
+			for(Resource r : ressources) 
+			{
+				if(r.getClass().equals(Annotation.class) && r.getAuthor().isSameUser(author))
+				{
+					annotations.add((Annotation)r);
+				}
+			}
+			return annotations ;
+		} else {
+			return annotations ;
+		}
+	}
+	
+	public static List<Annotation> findByRange(int start, int end)
+	{
+		List<Annotation> annotations = Annotation.allAnnotation();
+		return annotations.subList(start, end);
+	}
 }
