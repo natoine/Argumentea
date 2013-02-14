@@ -17,8 +17,6 @@
 			</div>
 		</div>
 		
-		<button class="btn btn-select" type ="button">S&eacute;lectionner</button>
-		
 		<h2>Annotations : </h2>
 		<ul>
 		    @for((annotation, i) <- annotations.zipWithIndex) {
@@ -40,6 +38,15 @@
 		}
 		</ul>
 	</div>
+
+<h2>Add a new Annotation</h2>
+ 
+<div class="formAnnotation">
+	Titre : <input type="text" id="AnnotationFormTitle"/>
+	Contenu de l'annotation : <textarea id="AnnotationFormContent" cols="50" name="content"></textarea>
+	<button class="btn btn-select" type ="button">S&eacute;lectionner</button>
+</div>
+
 }
 
 <script type="text/javascript">
@@ -54,7 +61,7 @@ $(document).ready(function($) {
 
 	//Pour récupérer une sélection, un contenu et deux xpointers
 	$btnSelect.click(function(event) {
-	 	alert("click");
+	 	//alert("click");
 		//recuperation de la selection en cours
         	var selection = window.getSelection();
 		//vérifier que la sélection n'est pas vide
@@ -62,8 +69,8 @@ $(document).ready(function($) {
                 {
 			var content = selection.toString();
 			var currentUrl = window.location;
-			alert("content : " + content);
-			alert("currentUrl : " + currentUrl);
+			//alert("content : " + content);
+			//alert("currentUrl : " + currentUrl);
 			//Test du Browser
 			//TODO
 			//XPOINTER Mozilla
@@ -126,11 +133,21 @@ $(document).ready(function($) {
 				        xpointerEnd = makeXpointer(currentUrl, trueEndNode, end_offset);
 					alert(xpointerStart);
 				        alert(xpointerEnd);
+					alert(content);
+					alert(currentUrl);
+					$textAreaContent = $("#AnnotationFormContent");
+					var annotationContent = $textAreaContent.val() ;
+					alert(annotationContent);
+					$title = $("#AnnotationFormTitle");
+					var annotationTitle = $title.val() ;
+					alert(annotationTitle);
+					if(annotationContent.length == 0) alert("Veuillez saisir le contenu de votre annotation");
 				}
 				else alert("sélection non valide");
 			}
 			else alert("sélection non valide");
 		}
+		else alert("Veuillez sélectionner une partie de l'article.");
 	});
 			/*
 			* Vérifie que le noeud est bien un fils du noeud d'id zoneAnnotable
