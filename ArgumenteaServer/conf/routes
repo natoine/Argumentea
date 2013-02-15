@@ -25,6 +25,7 @@ POST    /articles/:id/delete       			controllers.UserProfile.deleteArticle(id: 
 GET	/article/:id/:page				controllers.UserProfile.article(id: String, page : Integer)
 GET	/article/:id					controllers.UserProfile.article(id: String, page : Integer ?= 0)
 GET 	/newArticle					controllers.UserProfile.newArticleForm()
+POST	/articleContentAnnotated			controllers.UserProfile.getArticleContentAnnotated()
 
 #Annotation
 GET	/annotations					controllers.UserProfile.annotations()
@@ -33,7 +34,7 @@ POST	/annotationsJSON				controllers.UserProfile.newAnnotationJson()
 POST	/annotations/:id/delete				controllers.UserProfile.deleteAnnotation(id: String)
 GET	/annotation/:id					controllers.UserProfile.annotation(id: String)
 GET	/annotations/:id				controllers.UserProfile.getAnnotationsOnArticle(id: String)
-GET	/myAnnotations					controllers.UserProfile.myAnnotations
+GET	/myAnnotations					controllers.UserProfile.myAnnotations()
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               			controllers.Assets.at(path="/public", file)
