@@ -12,8 +12,8 @@ import com.google.code.morphia.annotations.Reference;
 import controllers.MorphiaObject;
 
 @Entity("Resources")
-public class Annotation extends Resource{
-
+public class Annotation extends Resource
+{
 	@Reference
 	private Resource annotated ;
 	
@@ -99,7 +99,14 @@ public class Annotation extends Resource{
 	
 	public static List<Annotation> findByResourceId(String id, int start, int end)
 	{
-		return Annotation.findByResourceId(id).subList(start, end);
+		List<Annotation> annotations = Annotation.findByResourceId(id);
+		
+		if(start < annotations.size() && end < annotations.size())
+		{
+			return annotations.subList(start, end);
+		}
+		else
+			return annotations;
 	}
 	
 	public static List<Annotation> findByAuthor(UserAccount author)
@@ -124,6 +131,12 @@ public class Annotation extends Resource{
 	public static List<Annotation> findByRange(int start, int end)
 	{
 		List<Annotation> annotations = Annotation.allAnnotation();
-		return annotations.subList(start, end);
+		
+		if(start < annotations.size() && end < annotations.size())
+		{
+			return annotations.subList(start, end);
+		}
+		else
+			return annotations;
 	}
 }

@@ -10,7 +10,7 @@
   
     @for(article <- articles) {
       <div class="box_wide">
-	      <h2><a href="@routes.UserProfile.article(article.getId.toString)">@article.getTitle</a></h2>
+	      <h2><a href="@routes.UserProfile.article(article.getId.toString, 0)">@article.getTitle</a></h2>
 	      <div class="meta_infos">Cr&eacute;&eacute; le : @article.getCreationDate.format("dd/MM/yyyy")</div>
 	      <div class="article_content">
 	      	
