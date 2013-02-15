@@ -106,9 +106,10 @@ public class UserProfile extends Controller
 		anyData.put("annotatedContent", json.get("annotatedContent").asText());
 		UserAccount author = UserAccount.findByNickname(session("nickname"));
 		anyData.put("author.id", author.getId().toString());
-		String url = json.get("currentUrl").asText();
+		/*String url = json.get("currentUrl").asText();
 		String[] splittedUrl = url.split("/");
-		String annotatedId = splittedUrl[splittedUrl.length - 1] ;
+		String annotatedId = splittedUrl[splittedUrl.length - 1] ;*/
+		String annotatedId = json.get("annotatedId").asText();
 		System.out.println("annotatedId : " + annotatedId);
 		Resource annotated = Resource.findById(annotatedId);
 		//anyData.put("annotated.id", annotatedId);
