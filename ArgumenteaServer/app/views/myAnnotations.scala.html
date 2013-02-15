@@ -10,7 +10,7 @@
   
 		@for(annotation <- annotations) {
 		<div class="box_wide">
-			<h2><a href="@routes.UserProfile.annotation(annotation.getId.toString)">Porte sur : @annotation.getAnnotated.getTitle</a></h2>
+			<h2><a href="@routes.UserProfile.annotation(annotation.getId.toString, 0)">Porte sur : @annotation.getAnnotated.getTitle</a></h2>
 			<div class="meta_infos">Cr&eacute;&eacute;e le : @annotation.getCreationDate.format("dd/MM/yyy")</div>
 			<div class="content">@Html(annotation.getContent)</div>
 			<div class="annotatedContent">@Html(annotation.getAnnotatedContent)</div>

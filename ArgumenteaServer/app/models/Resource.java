@@ -93,4 +93,8 @@ public abstract class Resource {
 		}
 		return options;
 	}
+	
+	public abstract boolean isArticle();
+	
+	public abstract boolean isAnnotation();
 }
