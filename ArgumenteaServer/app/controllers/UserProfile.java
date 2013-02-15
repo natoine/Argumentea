@@ -6,7 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.codehaus.jackson.JsonNode;
+import org.htmlparser.util.ParserException;
 
+import models.AnnotatedHtml;
 import models.Annotation;
 import models.Article;
 import models.Resource;
@@ -105,11 +107,22 @@ public class UserProfile extends Controller
 		{
 			Article article = Article.findById(articleId);
 			String htmlContent = article.getContent() ;
-			System.out.println(htmlContent);
-			//TODO process content and colorate with annotations
+			//System.out.println(htmlContent);
 			List<String> annotationsId = json.get("annotationsId").findValuesAsText("id");
-			System.out.println("nb annotations : " + annotationsId.size());
-			return ok(htmlContent);
+			//System.out.println("nb annotations : " + annotationsId.size());
+			AnnotatedHtml annotatedHtml = new AnnotatedHtml(htmlContent);
+			for(String annotationId : annotationsId)
+			{
+				Annotation annotation = Annotation.findById(annotationId);
+				//TODO change color wrt Annotation type
+				try {
+					annotatedHtml.highLight(annotation, "yellow");
+				} catch (ParserException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			return ok(annotatedHtml.getHtmlContent());
 		}
 		else return badRequest();
 	}
