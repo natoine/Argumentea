@@ -15,7 +15,7 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Security;
 
-@Security.Authenticated(Secured.class)
+//@Security.Authenticated(Secured.class)
 public class UserProfile extends Controller
 {
 	protected static Form<Article> articleForm = form(Article.class);
@@ -90,6 +90,9 @@ public class UserProfile extends Controller
 			Article article = Article.findById(articleId);
 			String htmlContent = article.getContent() ;
 			System.out.println(htmlContent);
+			//TODO process content and colorate with annotations
+			List<String> annotationsId = json.get("annotationsId").findValuesAsText("id");
+			System.out.println("nb annotations : " + annotationsId.size());
 			return ok(htmlContent);
 		}
 		else return badRequest();

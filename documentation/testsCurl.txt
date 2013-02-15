@@ -1,0 +1,1 @@
+curl --header "Content-type: application/json" --request POST --data '{"articleId": "511e48a244ae40b23cfa0963", "annotationsId": [{"id":"511e48b144ae40b23cfa0964"},{"id":"511e48c344ae40b23cfa0965"}]}' http://localhost:9000/articleContentAnnotated
