@@ -71,4 +71,51 @@ public class Article extends Resource
 			return articles ;
 		}
 	}
+	
+	public static List<Article> findByAuthor(UserAccount author, int limit)
+	{
+		List<Article> articles = findByAuthor(author);
+		if(articles.size() - 10 < 0)
+		{
+			return articles.subList(0, articles.size());
+		}
+		else
+		{
+			return articles.subList(articles.size() - 10, articles.size());
+		}
+	}
+	
+	public static List<Article> findByRange(int start, int end)
+	{
+		List<Article> articles = Article.allArticle();
+		
+		if(start < articles.size())
+		{
+			if(end < articles.size())
+			{
+				return articles.subList(start, end);
+			}
+			else
+			{
+				return articles.subList(start, articles.size());
+			}
+		}
+		else
+			return articles;
+	}
+	
+	public static int getTotalArticles()
+	{
+		return Article.allArticle().size();
+	}
+
+	@Override
+	public boolean isArticle() {
+		return true;
+	}
+
+	@Override
+	public boolean isAnnotation() {
+		return false;
+	}
 }

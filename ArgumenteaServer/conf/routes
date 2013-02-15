@@ -6,6 +6,7 @@
 GET     /                           controllers.Application.index()
 GET 	/login						controllers.Application.login()
 POST 	/login						controllers.Application.checkLoginInfos()
+GET 	/logout						controllers.Application.logout()
 GET 	/register					controllers.Application.register()
 
 #Users
@@ -31,7 +32,8 @@ GET		/annotations				controllers.UserProfile.annotations()
 POST	/annotations				controllers.UserProfile.newAnnotation()
 POST	/annotationsJSON			controllers.UserProfile.newAnnotationJson()
 POST	/annotations/:id/delete		controllers.UserProfile.deleteAnnotation(id: String)
-GET		/annotation/:id				controllers.UserProfile.annotation(id: String)
+GET		/annotation/:id				controllers.UserProfile.annotation(id: String, page: Integer ?= 0)
+GET		/annotation/:id/:page		controllers.UserProfile.annotation(id: String, page: Integer)
 GET		/annotations/:id			controllers.UserProfile.getAnnotationsOnArticle(id: String)
 GET		/myAnnotations				controllers.UserProfile.myAnnotations
 

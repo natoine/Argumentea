@@ -1,5 +1,6 @@
 package controllers;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,18 +25,29 @@ public class UserProfile extends Controller
 	public static Result index()
 	{
 		UserAccount currentUser = UserAccount.findByNickname(session("nickname"));
-		return ok(views.html.userprofile.render(Article.findByAuthor(currentUser), Annotation.findByAuthor(currentUser)));
+		
+		List<Article> articles = Article.findByAuthor(currentUser, 10);
+		List<Annotation> annotations = Annotation.findByAuthor(currentUser, 10);
+		
+		Collections.reverse(articles);
+		Collections.reverse(annotations);
+		
+		return ok(views.html.userprofile.render(articles, annotations));
 	}
 	
 	public static Result articles() 
 	{
-		return ok(views.html.articles.render(Article.allArticle()));
+		List<Article> articles = Article.allArticle();
+		Collections.reverse(articles);
+		return ok(views.html.articles.render(articles));
 	}
 	
 	public static Result myArticles()
 	{
 		UserAccount currentUser = UserAccount.findByNickname(session("nickname"));
-		return ok(views.html.myArticles.render(Article.findByAuthor(currentUser)));
+		List<Article> articles = Article.findByAuthor(currentUser);
+		Collections.reverse(articles);
+		return ok(views.html.myArticles.render(articles));
 	}
 	
 	public static Result newArticleForm()
@@ -75,9 +87,13 @@ public class UserProfile extends Controller
 		if(article == null) return redirect(routes.Application.index());
 		else
 		{	
-			//List<Annotation> annotations = Annotation.findByResourceId(id);
-			List<Annotation> annotations = Annotation.findByResourceId(id, page * 10, page * 10 + 10);
-			return ok(views.html.article.render(article, annotations, annotationForm));
+			int totalAnnotations = Annotation.findByResourceId(id).size();
+			
+			int nbPages = (int)Math.ceil(totalAnnotations / 10.0f);
+			
+			List<Annotation> annotations = Annotation.findByResourceId(id, page * 10, page * 10 + 10, true);
+			
+			return ok(views.html.article.render(article, annotations, annotationForm, nbPages, page));
 		}
 	}
 	
@@ -161,16 +177,27 @@ public class UserProfile extends Controller
 		return redirect(routes.UserProfile.annotations());
 	}
 	
-	public static Result annotation(String id)
+	public static Result annotation(String id, Integer page)
 	{
 		Annotation annotation = Annotation.findById(id);
 		if(annotation == null) return redirect(routes.Application.index());
-		else return ok(views.html.annotation.render(annotation));
+		else
+		{
+			int totalAnnotations = Annotation.findByResourceId(id).size();
+			
+			int nbPages = (int)Math.ceil(totalAnnotations / 10.0f);
+			
+			List<Annotation> annotations = Annotation.findByResourceId(id, page * 10, page * 10 + 10, true);
+			
+			return ok(views.html.annotation.render(annotation, annotations, annotationForm, nbPages, page));
+		}
 	}
 	
 	public static Result myAnnotations()
 	{
 		UserAccount currentUser = UserAccount.findByNickname(session("nickname"));
-		return ok(views.html.myAnnotations.render(Annotation.findByAuthor(currentUser)));
+		List<Annotation> annotations = Annotation.findByAuthor(currentUser);
+		Collections.reverse(annotations);
+		return ok(views.html.myAnnotations.render(annotations));
 	}
 }

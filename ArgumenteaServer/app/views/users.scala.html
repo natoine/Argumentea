@@ -9,24 +9,7 @@
   <ul>
     @for(ua <- uas) {
       <li><a href="@routes.Application.seeUserAccount(ua.getNickname)">@ua.getNickname</a> : @ua.getFirstname @ua.getLastname @ua.getEmail
-      @form(routes.Admin.deleteUserAccount(ua.getId.toString)) {
-                    <input type="submit" value="Delete">
-                }
       </li>
     }
   </ul>
-  
-  <h2>Add a new User</h2>
-  
-  @form(routes.Application.newUserAccount()) {
-     @inputText(uaForm("nickname"), '_label -> "Pseudo :")
-     @inputText(uaForm("firstname"), '_label -> "Prénom :")
-     @inputText(uaForm("lastname"), '_label -> "Nom :")
-     @inputText(uaForm("email"), '_label -> "Mél :")
-     @inputText(uaForm("password"), '_label -> "Mot de passe : ")
-     @inputText(uaForm("passwordRepeat"), '_label -> "Mot de passe (retap�) : ")
-     <input type="submit" value="Create">
-  
-  }
-
 }

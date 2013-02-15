@@ -1,6 +1,7 @@
 package models;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -97,13 +98,24 @@ public class Annotation extends Resource
 		return MorphiaObject.datastore.find(Annotation.class).field("annotated").equal(resource).asList();
 	}
 	
-	public static List<Annotation> findByResourceId(String id, int start, int end)
+	public static List<Annotation> findByResourceId(String id, int start, int end, boolean reverse)
 	{
 		List<Annotation> annotations = Annotation.findByResourceId(id);
-		
-		if(start < annotations.size() && end < annotations.size())
+		if(reverse)
 		{
-			return annotations.subList(start, end);
+			Collections.reverse(annotations);
+		}
+		
+		if(start < annotations.size())
+		{
+			if(end < annotations.size())
+			{
+				return annotations.subList(start, end);
+			}
+			else
+			{
+				return annotations.subList(start, annotations.size());
+			}
 		}
 		else
 			return annotations;
@@ -128,15 +140,50 @@ public class Annotation extends Resource
 		}
 	}
 	
+	public static List<Annotation> findByAuthor(UserAccount author, int limit)
+	{
+		List<Annotation> annotation = findByAuthor(author);
+		if(annotation.size() - 10 < 0)
+		{
+			return annotation.subList(0, annotation.size());
+		}
+		else
+		{
+			return annotation.subList(annotation.size() - 10, annotation.size());
+		}
+	}
+	
 	public static List<Annotation> findByRange(int start, int end)
 	{
 		List<Annotation> annotations = Annotation.allAnnotation();
 		
-		if(start < annotations.size() && end < annotations.size())
+		if(start < annotations.size())
 		{
-			return annotations.subList(start, end);
+			if(end < annotations.size())
+			{
+				return annotations.subList(start, end);
+			}
+			else
+			{
+				return annotations.subList(start, annotations.size());
+			}
 		}
 		else
 			return annotations;
+	}
+	
+	public static int getTotalAnnotations()
+	{
+		return Annotation.allAnnotation().size();
+	}
+
+	@Override
+	public boolean isArticle() {
+		return false;
+	}
+
+	@Override
+	public boolean isAnnotation() {
+		return true;
 	}
 }

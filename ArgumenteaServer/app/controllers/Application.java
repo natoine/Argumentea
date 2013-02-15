@@ -72,13 +72,23 @@ public class Application extends Controller
 				user.setLastname(filledForm.field("lastname").value());
 				
 				UserAccount.create(user);
-				return redirect(routes.Application.userAccounts());	
+				return redirect(routes.Application.index());	
 			}
 			catch(DuplicateKey exception)
 			{
 				return badRequest(views.html.users.render(UserAccount.all(), filledForm));
 			}
 		}
+	}
+	
+	public static Result logout()
+	{
+		if(session("nickname") != null)
+		{
+			session().clear();
+			return redirect(routes.Application.index());
+		}
+		return redirect(routes.Application.index());
 	}
 	
 	public static Result login()

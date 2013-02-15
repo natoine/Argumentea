@@ -23,7 +23,7 @@
     		<div id="rightSide" class="side">
     		
     			@if(session.get("nickname") != null) {
-    				Bonjour <a href="/myProfile">@session.get("nickname")</a>
+    				Bonjour <a href="/myProfile">@session.get("nickname")</a> / <a href="/logout">Déconnexion</a>
     			} else {
     				<a href="/login">CONNEXION</a> / <a href="/register">INSCRIPTION</a>
     			}

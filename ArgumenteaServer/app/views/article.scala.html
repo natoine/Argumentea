@@ -1,8 +1,23 @@
-@(article: Article, annotations: List[Annotation], annotationForm: Form[Annotation])
+@(article: Article, annotations: List[Annotation], annotationForm: Form[Annotation], nbPages : Integer, currentPage : Integer)
 
 @import helper._
 
 @main(article.getTitle) {
+
+	<script type="text/javascript">
+		$().ready(function() 
+		{
+			var opts = {
+				lang 			: 'fr',
+				styleWidthCSS 	: false,
+				height 			: 150,
+				toolbar 		: 'compact',
+				allowSource 	: false
+			}	
+			
+			$("#AnnotationFormContent").elrte(opts);
+		});
+	</script>
 
 	<h1>@article.getTitle</h1>
   
@@ -17,6 +32,21 @@
 			</div>
 		</div>
 		
+		@if(article.getAuthor.getNickname.equals(session.get("nickname"))) {
+			@form(routes.UserProfile.deleteArticle(article.getId.toString)) {
+				<input type="submit" value="Supprimer l'article" class="btn">
+			}
+		}
+		
+		<h2>Ajouter une annotation</h2>
+ 
+		<div class="formAnnotation">
+			Titre : <br />
+			<input type="text" id="AnnotationFormTitle" style="width:100%" /><br />
+			Contenu de l'annotation : <br /><textarea id="AnnotationFormContent" cols="50" name="content"></textarea><br />
+			<button class="btn btn-select" type ="button">S&eacute;lectionner</button>
+		</div>
+		
 		<h2>Annotations : </h2>
 		<ul>
 		    @for((annotation, i) <- annotations.zipWithIndex) {
@@ -25,6 +55,7 @@
 				} else {
 					<li>
 				}
+				<h3><a href="/annotation/@annotation.getId">@annotation.getTitle</a></h3>
 				<div class="meta_infos">par <a href="/user/@annotation.getAuthor.getNickname">@annotation.getAuthor.getNickname</a></div>
 				<div class="content">@Html(annotation.getContent)</div>
 				<div class="annotatedContent">@Html(annotation.getAnnotatedContent)</div>
@@ -36,16 +67,22 @@
 				}
 			</li>
 		}
+		
+		@if(nbPages > 0) {
+			Pages :
+			
+			@for(i <- 0 until nbPages) {
+				@if(i != currentPage) {
+					<a href="/article/@article.getId/@i">@(i+1)</a>&nbsp;
+				} else {
+					@(i+1)&nbsp;
+				}
+			}
+		} else {
+			<p>Pas d'annotation.</p>
+		}
 		</ul>
 	</div>
-
-<h2>Add a new Annotation</h2>
- 
-<div class="formAnnotation">
-	Titre : <input type="text" id="AnnotationFormTitle"/>
-	Contenu de l'annotation : <textarea id="AnnotationFormContent" cols="50" name="content"></textarea>
-	<button class="btn btn-select" type ="button">S&eacute;lectionner</button>
-</div>
 
 }
 
