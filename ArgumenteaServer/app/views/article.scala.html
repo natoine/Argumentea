@@ -131,17 +131,30 @@ $(document).ready(function($) {
 				{
 				        xpointerStart = makeXpointer(currentUrl, trueStartNode, start_offset);
 				        xpointerEnd = makeXpointer(currentUrl, trueEndNode, end_offset);
-					alert(xpointerStart);
-				        alert(xpointerEnd);
-					alert(content);
-					alert(currentUrl);
+					//alert(xpointerStart);
+				        //alert(xpointerEnd);
+					//alert(content);
+					//alert(currentUrl);
 					$textAreaContent = $("#AnnotationFormContent");
 					var annotationContent = $textAreaContent.val() ;
-					alert(annotationContent);
+					//alert(annotationContent);
 					$title = $("#AnnotationFormTitle");
 					var annotationTitle = $title.val() ;
-					alert(annotationTitle);
+					//alert(annotationTitle);
 					if(annotationContent.length == 0) alert("Veuillez saisir le contenu de votre annotation");
+					else //création de l'annotation 
+					{
+						//alert("envoi du json");
+						$.ajax({
+					                type: 'POST',
+					                url: "@routes.UserProfile.newAnnotationJson()",
+							contentType: "application/json; charset=UTF-8",
+                					data: JSON.stringify({"pointerBegin":xpointerStart , "pointerEnd":xpointerEnd, "annotatedContent":content, "content":annotationContent, "title":annotationTitle, "currentUrl":currentUrl.toString()}),
+                					success: function(){
+                    					location.reload();
+                						}
+            						})
+					}
 				}
 				else alert("sélection non valide");
 			}
@@ -207,7 +220,7 @@ $(document).ready(function($) {
                                 }
                                 else
                                 {
-                                    xpointer = xpointer + "id(\"" + idNode + "\")";
+                                    xpointer = xpointer + "id('" + idNode + "')";
                                 }
                                 xpointer = xpointer + path + "," + offset + ")";
                                 return xpointer;
