@@ -3,7 +3,7 @@
 # ~~~~
 
 # Home page
-GET     /                           controllers.Application.index()
+GET     /                           			controllers.Application.index()
 GET 	/login						controllers.Application.login()
 POST 	/login						controllers.Application.checkLoginInfos()
 GET 	/register					controllers.Application.register()
@@ -11,29 +11,29 @@ GET 	/register					controllers.Application.register()
 #Users
 GET 	/users 						controllers.Application.userAccounts()
 POST 	/users 						controllers.Application.newUserAccount()
-GET		/user/:nickname				controllers.Application.seeUserAccount(nickname: String)
+GET	/user/:nickname					controllers.Application.seeUserAccount(nickname: String)
 
 #Admin
-POST    /admin/users/:id/delete     controllers.Admin.deleteUserAccount(id: String)
+POST    /admin/users/:id/delete     			controllers.Admin.deleteUserAccount(id: String)
 
 #Article
 GET 	/myProfile					controllers.UserProfile.index()
-GET		/articles					controllers.UserProfile.articles()
-GET		/myArticles					controllers.UserProfile.myArticles()
+GET	/articles					controllers.UserProfile.articles()
+GET	/myArticles					controllers.UserProfile.myArticles()
 POST 	/articles 					controllers.UserProfile.newArticle()
-POST    /articles/:id/delete       	controllers.UserProfile.deleteArticle(id: String)
-GET		/article/:id/:page			controllers.UserProfile.article(id: String, page : Integer)
-GET		/article/:id				controllers.UserProfile.article(id: String, page : Integer ?= 0)
+POST    /articles/:id/delete       			controllers.UserProfile.deleteArticle(id: String)
+GET	/article/:id/:page				controllers.UserProfile.article(id: String, page : Integer)
+GET	/article/:id					controllers.UserProfile.article(id: String, page : Integer ?= 0)
 GET 	/newArticle					controllers.UserProfile.newArticleForm()
 
 #Annotation
-GET		/annotations				controllers.UserProfile.annotations()
-POST	/annotations				controllers.UserProfile.newAnnotation()
-POST	/annotationsJSON			controllers.UserProfile.newAnnotationJson()
-POST	/annotations/:id/delete		controllers.UserProfile.deleteAnnotation(id: String)
-GET		/annotation/:id				controllers.UserProfile.annotation(id: String)
-GET		/annotations/:id			controllers.UserProfile.getAnnotationsOnArticle(id: String)
-GET		/myAnnotations				controllers.UserProfile.myAnnotations
+GET	/annotations					controllers.UserProfile.annotations()
+POST	/annotations					controllers.UserProfile.newAnnotation()
+POST	/annotationsJSON				controllers.UserProfile.newAnnotationJson()
+POST	/annotations/:id/delete				controllers.UserProfile.deleteAnnotation(id: String)
+GET	/annotation/:id					controllers.UserProfile.annotation(id: String)
+GET	/annotations/:id				controllers.UserProfile.getAnnotationsOnArticle(id: String)
+GET	/myAnnotations					controllers.UserProfile.myAnnotations
 
 # Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file               controllers.Assets.at(path="/public", file)
+GET     /assets/*file               			controllers.Assets.at(path="/public", file)
