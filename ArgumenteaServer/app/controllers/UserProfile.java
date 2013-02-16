@@ -8,17 +8,18 @@ import java.util.Map;
 import org.codehaus.jackson.JsonNode;
 import org.htmlparser.util.ParserException;
 
-import models.AnnotatedHtml;
 import models.Annotation;
 import models.Article;
 import models.Resource;
 import models.UserAccount;
+import models.annotationHtml.AnnotatedHtml;
+import models.annotationHtml.SplitedXpointer;
 import play.data.Form;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Security;
 
-@Security.Authenticated(Secured.class)
+//@Security.Authenticated(Secured.class)
 public class UserProfile extends Controller
 {
 	protected static Form<Article> articleForm = form(Article.class);
@@ -111,15 +112,20 @@ public class UserProfile extends Controller
 			List<String> annotationsId = json.get("annotationsId").findValuesAsText("id");
 			//System.out.println("nb annotations : " + annotationsId.size());
 			AnnotatedHtml annotatedHtml = new AnnotatedHtml(htmlContent);
+			SplitedXpointer splitedXpointerStart = new SplitedXpointer();
+			SplitedXpointer splitedXpointerEnd = new SplitedXpointer();
 			for(String annotationId : annotationsId)
 			{
 				Annotation annotation = Annotation.findById(annotationId);
+				splitedXpointerStart = SplitedXpointer.createXpointer(annotation.getPointerBegin(), splitedXpointerStart);
+				splitedXpointerEnd = SplitedXpointer.createXpointer(annotation.getPointerEnd(), splitedXpointerEnd);
 				//TODO change color wrt Annotation type
 				try {
-					annotatedHtml.highLight(annotation, "yellow");
+					annotatedHtml.highLight(splitedXpointerStart, splitedXpointerEnd, "yellow");
 				} catch (ParserException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+					System.out.println("not able to parse HTML !");
 				}
 			}
 			return ok(annotatedHtml.getHtmlContent());
