@@ -33,9 +33,102 @@ public class AnnotatedHtml
 		System.out.println("[AnnotatedHtml.highLight] startNode content : " + startNode.toHtml());
 		Node endNode = findNode(nl, end);
 		System.out.println("[AnnotatedHtml.highLight] endNode content : " + endNode.toHtml());
-		//TODO ajouter les balises span
+		addSpans(startNode, endNode);
 		
 	}
+	//TODO ajouter les balises span
+	private static void addSpans(Node node1, Node node2)
+	{
+		//soit node1 == node2
+		if(node1.equals(node2))
+		{
+			System.out.println("[AnnotatedHtml.addSpans] same node");
+		}
+		else 
+		{
+			//soit node1 et node2 de même niveau
+			if(sameLevel(node1, node2))
+			{
+				System.out.println("[AnnotatedHtml.addSpans] node of same level in the html tree and node1 before node2");
+			}
+			else
+			{
+				if(sameLevel(node2, node1))
+				{
+					System.out.println("[AnnotatedHtml.addSpans] node of same level in the html tree and node2 before node1");
+				}
+				else
+				{
+					//soit node1 fils de node2
+					if(hasChild(node1 , node2))
+					{
+						System.out.println("[AnnotatedHtml.addSpans] node2 child of node1");
+					}
+					else
+					{
+						//soit node2 fils de node1
+						if(hasChild(node2 , node1))
+						{
+							System.out.println("[AnnotatedHtml.addSpans] node1 child of node2");
+						}
+						else
+						{
+							//soit node1 et node2 pas de même niveau et pas fils l'un de l'autre
+							System.out.println("[AnnotatedHtml.addSpans] not child one of another");
+						}
+					}
+				}
+			}
+		}
+	}
+	/**
+	 * Tests if node2 is in the same level than node1 but after him in the DOM.
+	 * @param node1
+	 * @param node2
+	 * @return boolean
+	 */
+	public static boolean sameLevel(Node node1, Node node2)
+	{
+		boolean found = false ;
+		Node currentNode = node1 ;
+		Node nextSibling = currentNode.getNextSibling() ;
+		while(nextSibling != null && !found)
+		{
+			if(nextSibling.equals(node2)) found = true ;
+			nextSibling = nextSibling.getNextSibling();
+		}
+		return found ;
+	}
+	/**
+	 * Tests if node1 has node2 as a child. Recursive method.
+	 * @param node1
+	 * @param node2
+	 * @return boolean
+	 */
+	public static boolean hasChild(Node node1, Node node2)
+	{
+		boolean found = false ;
+		NodeList children = node1.getChildren() ;
+		if(children != null)
+		{
+			int nbChild = children.size();
+			Node currentChild ;
+			int cptChild = 0 ;
+			while(cptChild < nbChild)
+			{
+				currentChild = children.elementAt(cptChild);
+				if(currentChild.equals(node2)) found = true ;
+				else
+				{
+					found = hasChild(currentChild , node2);
+				}
+				cptChild ++ ;
+			}
+			
+		}
+		return found ;
+	}
+	
 	/**
 	 * Usefull for debuging HTMLTreeNode
 	 * @param level recursive param, level in the tree
