@@ -75,6 +75,7 @@ public class AnnotatedHtml
 						{
 							//soit node1 et node2 pas de même niveau et pas fils l'un de l'autre
 							System.out.println("[AnnotatedHtml.addSpans] not child one of another");
+							//dans ce cas il faut trouver l'ensemble des noeuds entre les deux noeuds et il faut l'ordre entre start et end
 						}
 					}
 				}
