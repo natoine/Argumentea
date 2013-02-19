@@ -172,9 +172,10 @@ $(document).ready(function($) {
 				        //alert(xpointerEnd);
 					//alert(content);
 					//alert(currentUrl);
-					$textAreaContent = $("#AnnotationFormContent");
-					var annotationContent = $textAreaContent.val() ;
-					//alert(annotationContent);
+					var iframe = $("iframe").contents();					
+					$textAreaContent = $(iframe).find("body").html();
+					var annotationContent = $textAreaContent;
+					alert(annotationContent);
 					$title = $("#AnnotationFormTitle");
 					var annotationTitle = $title.val() ;
 					//alert(annotationTitle);

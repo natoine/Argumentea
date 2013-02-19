@@ -33,11 +33,11 @@ public class AnnotatedHtml
 		System.out.println("[AnnotatedHtml.highLight] startNode content : " + startNode.toHtml());
 		Node endNode = findNode(nl, end);
 		System.out.println("[AnnotatedHtml.highLight] endNode content : " + endNode.toHtml());
-		addSpans(startNode, endNode);
+		addSpans(startNode, endNode, start.getIndice(), end.getIndice());
 		
 	}
 	//TODO ajouter les balises span
-	private static void addSpans(Node node1, Node node2)
+	private static void addSpans(Node node1, Node node2, int indiceStart, int indiceEnd)
 	{
 		//soit node1 == node2
 		if(node1.equals(node2))
