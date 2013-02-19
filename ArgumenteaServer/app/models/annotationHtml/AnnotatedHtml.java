@@ -2,7 +2,9 @@ package models.annotationHtml;
 
 import org.htmlparser.Node;
 import org.htmlparser.Parser;
+import org.htmlparser.nodes.TagNode;
 import org.htmlparser.nodes.TextNode;
+import org.htmlparser.tags.Span;
 import org.htmlparser.util.NodeList;
 import org.htmlparser.util.ParserException;
 
@@ -34,8 +36,106 @@ public class AnnotatedHtml
 		Node endNode = findNode(nl, end);
 		System.out.println("[AnnotatedHtml.highLight] endNode content : " + endNode.toHtml());
 		addSpans(startNode, endNode, start.getIndice(), end.getIndice());
-		
+		System.out.println("[AnnotatedHtml.highLight] modified html : " + nl.toHtml()) ;
+		//sets the new Annotated HtmlContent
+		htmlContent = nl.toHtml();
 	}
+	
+	private static NodeList addSpanInTextNode(TextNode node, int indiceStart, int indiceEnd)
+	{
+		NodeList toreturn = new NodeList();
+		
+		String originalContent = node.getText() ;
+		String beforeSpan = originalContent.substring(0, indiceStart);
+		String contentAnnotated = originalContent.substring(indiceStart, indiceEnd);
+		String afterSpan = originalContent.substring(indiceEnd);
+		System.out.println("[AnnotatedHtml.addSpanInTextNode] beforeSpan : " + beforeSpan);
+		System.out.println("[AnnotatedHtml.addSpanInTextNode] contentAnnotated : " + contentAnnotated);
+		System.out.println("[AnnotatedHtml.addSpanInTextNode] afterSpan : " + afterSpan);
+		
+		Span annotationSpan = new Span();
+		TagNode endSpan = new TagNode();
+		endSpan.setTagName("/SPAN");
+		annotationSpan.setEndTag(endSpan);
+		NodeList toAdd = new NodeList();
+		toAdd.add(new TextNode(contentAnnotated));
+		annotationSpan.setChildren(toAdd);
+		System.out.println("[AnnotatedHtml.addSpanInTextNode] Span : " + annotationSpan.toHtml());
+		
+		toreturn.add(new TextNode(beforeSpan));
+		toreturn.add(annotationSpan);
+		toreturn.add(new TextNode(afterSpan));
+		
+		return toreturn ;
+	}
+	
+	private static void addSpanInANode(Node node, int indiceStart, int indiceEnd)
+	{
+		System.out.println("[AnnotatedHtml.addSpanInANode]");
+		NodeList children = node.getChildren();
+		node.setChildren(null);
+		NodeList newChildren = new NodeList();
+		if(children != null)
+		{
+			System.out.println("[AnnotatedHtml.addSpanInANode] node has children");
+			int currentIndiceStart = indiceStart ;
+			int currentIndiceEnd = indiceEnd ;
+			int nbNodes = children.size() ;
+			int cptNode = 0 ;
+			boolean done = false ;
+			while(cptNode < nbNodes && !done )
+			{
+				System.out.println(" child : " + cptNode + " class : " + children.elementAt(cptNode).getClass() + " content : " + children.elementAt(cptNode).toHtml());
+				Node currentNode = children.elementAt(cptNode) ;
+				if(currentNode instanceof TextNode)
+				{
+					int contentLength = currentNode.getText().length() ;
+					// dans ce cas on n'annote pas mais on met à jour l'indice de début et l'indice de fin
+					if(contentLength < currentIndiceStart) 
+					{
+						currentIndiceStart = currentIndiceStart - contentLength ;
+						currentIndiceEnd = currentIndiceEnd - contentLength ;
+						newChildren.add(currentNode);
+					}
+					else //là va falloir annoter
+					{
+						//toute l'annotation est dans ce TextNode
+						if(contentLength > currentIndiceEnd) 
+						{
+							NodeList newNodes = addSpanInTextNode((TextNode)currentNode , currentIndiceStart, currentIndiceEnd) ;
+							newChildren.add(newNodes);
+							done = true ;
+						}
+						else //là il va falloir continuer à annoter
+						{
+							NodeList newNodes = addSpanInTextNode((TextNode)currentNode , currentIndiceStart, contentLength);
+							newChildren.add(newNodes);
+							currentIndiceStart = 0 ;
+							currentIndiceEnd = currentIndiceEnd - contentLength ;
+							if(currentIndiceEnd <= 0) 
+							{
+								done = true ;
+								System.out.println("[AnnotatedHtml.addSpanInANode] annotations done");
+							}
+						} 
+					}
+				}
+				cptNode ++ ;
+			}
+		}
+		else
+		{
+			if(node instanceof TextNode)
+			{
+				NodeList modifieds = addSpanInTextNode((TextNode)node, indiceStart, indiceEnd);
+				//TODO needs to be tested ...
+				node.setChildren(modifieds);
+			}
+		}
+		node.setChildren(newChildren);
+		System.out.println("[AnnotatedHtml.addSpanInANode] new Node content : " + node.toHtml());
+	}
+	
 	//TODO ajouter les balises span
 	private static void addSpans(Node node1, Node node2, int indiceStart, int indiceEnd)
 	{
@@ -43,6 +143,8 @@ public class AnnotatedHtml
 		if(node1.equals(node2))
 		{
 			System.out.println("[AnnotatedHtml.addSpans] same node");
+			addSpanInANode(node1, indiceStart, indiceEnd);
+			System.out.println("[AnnotatedHtml.addSpans] same node, new node content : " + node1.toHtml());
 		}
 		else 
 		{
