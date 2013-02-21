@@ -121,7 +121,7 @@ public class UserProfile extends Controller
 				splitedXpointerEnd = SplitedXpointer.createXpointer(annotation.getPointerEnd(), splitedXpointerEnd);
 				//TODO change color wrt Annotation type
 				try {
-					annotatedHtml.highLight(splitedXpointerStart, splitedXpointerEnd, "yellow");
+					annotatedHtml.highLight(splitedXpointerStart, splitedXpointerEnd, "yellow", annotation.getId().toString());
 				} catch (ParserException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

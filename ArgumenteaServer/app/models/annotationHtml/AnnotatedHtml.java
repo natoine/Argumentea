@@ -25,7 +25,7 @@ public class AnnotatedHtml
 		this.htmlContent = htmlContent;
 	}
 
-	public void highLight(SplitedXpointer start , SplitedXpointer end, String color) throws ParserException //throws ParserException
+	public void highLight(SplitedXpointer start , SplitedXpointer end, String color, String annotationId) throws ParserException //throws ParserException
 	{
 		Parser parser = Parser.createParser(htmlContent , null);
 		NodeList nl = parser.parse(null);
@@ -35,13 +35,13 @@ public class AnnotatedHtml
 		System.out.println("[AnnotatedHtml.highLight] startNode content : " + startNode.toHtml());
 		Node endNode = findNode(nl, end);
 		System.out.println("[AnnotatedHtml.highLight] endNode content : " + endNode.toHtml());
-		addSpans(startNode, endNode, start.getIndice(), end.getIndice());
+		addSpans(startNode, endNode, start.getIndice(), end.getIndice(), color, annotationId);
 		System.out.println("[AnnotatedHtml.highLight] modified html : " + nl.toHtml()) ;
 		//sets the new Annotated HtmlContent
 		htmlContent = nl.toHtml();
 	}
 	
-	private static NodeList addSpanInTextNode(TextNode node, int indiceStart, int indiceEnd)
+	private static NodeList addSpanInTextNode(TextNode node, int indiceStart, int indiceEnd, String color, String annotationId)
 	{
 		NodeList toreturn = new NodeList();
 		
@@ -57,6 +57,8 @@ public class AnnotatedHtml
 		TagNode endSpan = new TagNode();
 		endSpan.setTagName("/SPAN");
 		annotationSpan.setEndTag(endSpan);
+		annotationSpan.setAttribute("id", "'annotation-" + annotationId + "'");
+		annotationSpan.setAttribute("style", "'background-color:" + color + "'");
 		NodeList toAdd = new NodeList();
 		toAdd.add(new TextNode(contentAnnotated));
 		annotationSpan.setChildren(toAdd);
@@ -69,7 +71,7 @@ public class AnnotatedHtml
 		return toreturn ;
 	}
 	
-	private static void addSpanInANode(Node node, int indiceStart, int indiceEnd)
+	private static void addSpanInANode(Node node, int indiceStart, int indiceEnd, String color, String annotationId)
 	{
 		System.out.println("[AnnotatedHtml.addSpanInANode]");
 		NodeList children = node.getChildren();
@@ -102,13 +104,13 @@ public class AnnotatedHtml
 						//toute l'annotation est dans ce TextNode
 						if(contentLength > currentIndiceEnd) 
 						{
-							NodeList newNodes = addSpanInTextNode((TextNode)currentNode , currentIndiceStart, currentIndiceEnd) ;
+							NodeList newNodes = addSpanInTextNode((TextNode)currentNode , currentIndiceStart, currentIndiceEnd, color, annotationId) ;
 							newChildren.add(newNodes);
 							done = true ;
 						}
 						else //là il va falloir continuer à annoter
 						{
-							NodeList newNodes = addSpanInTextNode((TextNode)currentNode , currentIndiceStart, contentLength);
+							NodeList newNodes = addSpanInTextNode((TextNode)currentNode , currentIndiceStart, contentLength, color, annotationId);
 							newChildren.add(newNodes);
 							currentIndiceStart = 0 ;
 							currentIndiceEnd = currentIndiceEnd - contentLength ;
@@ -127,7 +129,7 @@ public class AnnotatedHtml
 		{
 			if(node instanceof TextNode)
 			{
-				NodeList modifieds = addSpanInTextNode((TextNode)node, indiceStart, indiceEnd);
+				NodeList modifieds = addSpanInTextNode((TextNode)node, indiceStart, indiceEnd, color, annotationId);
 				//TODO needs to be tested ...
 				node.setChildren(modifieds);
 			}
@@ -137,13 +139,13 @@ public class AnnotatedHtml
 	}
 	
 	//TODO ajouter les balises span
-	private static void addSpans(Node node1, Node node2, int indiceStart, int indiceEnd)
+	private static void addSpans(Node node1, Node node2, int indiceStart, int indiceEnd, String color, String annotationId)
 	{
 		//soit node1 == node2
 		if(node1.equals(node2))
 		{
 			System.out.println("[AnnotatedHtml.addSpans] same node");
-			addSpanInANode(node1, indiceStart, indiceEnd);
+			addSpanInANode(node1, indiceStart, indiceEnd, color, annotationId);
 			System.out.println("[AnnotatedHtml.addSpans] same node, new node content : " + node1.toHtml());
 		}
 		else 
