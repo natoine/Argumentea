@@ -57,7 +57,7 @@ public class AnnotatedHtml
 		TagNode endSpan = new TagNode();
 		endSpan.setTagName("/SPAN");
 		annotationSpan.setEndTag(endSpan);
-		annotationSpan.setAttribute("id", "'annotation-" + annotationId + "'");
+		annotationSpan.setAttribute("id", "'annotationSpan-" + annotationId + "'");
 		annotationSpan.setAttribute("style", "'background-color:" + color + "'");
 		annotationSpan.setAttribute("class", "'annotated-coloration'");
 		NodeList toAdd = new NodeList();

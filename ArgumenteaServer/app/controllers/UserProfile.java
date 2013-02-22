@@ -103,7 +103,9 @@ public class UserProfile extends Controller
 	public static Result getArticleContentAnnotated()
 	{
 		JsonNode json = request().body().asJson();
+		
 		String articleId = json.get("articleId").asText();
+		
 		if( ! articleId.equals(""))
 		{
 			Article article = Article.findById(articleId);
