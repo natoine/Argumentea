@@ -55,9 +55,12 @@
 				} else {
 					<li>
 				}
+				<div class="annotation" id="annotation-@annotation.getId">
 				<h3><a href="/annotation/@annotation.getId">@annotation.getTitle</a></h3>
 				<div class="meta_infos">par <a href="/user/@annotation.getAuthor.getNickname">@annotation.getAuthor.getNickname</a></div>
+				Ce qui est dit : 
 				<div class="content">@Html(annotation.getContent)</div>
+				Au sujet de : 				
 				<div class="annotatedContent">@Html(annotation.getAnnotatedContent)</div>
 				
 				@if(annotation.getAuthor.getNickname.equals(session.get("nickname"))) {
@@ -65,6 +68,7 @@
 						<input type="submit" value="Supprimer cette annotation" class="btn" />
 					}
 				}
+				</div>
 			</li>
 		}
 		
