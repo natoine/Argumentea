@@ -35,7 +35,7 @@ public class AnnotatedHtml
 		System.out.println("[AnnotatedHtml.highLight] startNode content : " + startNode.toHtml());
 		Node endNode = findNode(nl, end);
 		System.out.println("[AnnotatedHtml.highLight] endNode content : " + endNode.toHtml());
-		addSpans(startNode, endNode, start.getIndice(), end.getIndice(), color, annotationId);
+		addSpans(nl, startNode, endNode, start.getIndice(), end.getIndice(), color, annotationId);
 		System.out.println("[AnnotatedHtml.highLight] modified html : " + nl.toHtml()) ;
 		//sets the new Annotated HtmlContent
 		htmlContent = nl.toHtml();
@@ -140,7 +140,7 @@ public class AnnotatedHtml
 	}
 	
 	//TODO ajouter les balises span
-	private static void addSpans(Node node1, Node node2, int indiceStart, int indiceEnd, String color, String annotationId)
+	private static void addSpans(NodeList nl, Node node1, Node node2, int indiceStart, int indiceEnd, String color, String annotationId)
 	{
 		//soit node1 == node2
 		if(node1.equals(node2))
@@ -152,13 +152,14 @@ public class AnnotatedHtml
 		else 
 		{
 			//soit node1 et node2 de même niveau
-			if(sameLevel(node1, node2))
+			if(sameLevel(nl, node1, node2))
 			{
 				System.out.println("[AnnotatedHtml.addSpans] node of same level in the html tree and node1 before node2");
+				
 			}
 			else
 			{
-				if(sameLevel(node2, node1))
+				if(sameLevel(nl, node2, node1))
 				{
 					System.out.println("[AnnotatedHtml.addSpans] node of same level in the html tree and node2 before node1");
 				}
@@ -193,17 +194,26 @@ public class AnnotatedHtml
 	 * @param node2
 	 * @return boolean
 	 */
-	public static boolean sameLevel(Node node1, Node node2)
+	public static boolean sameLevel(NodeList nl, Node node1, Node node2)
 	{
-		boolean found = false ;
-		Node currentNode = node1 ;
-		Node nextSibling = currentNode.getNextSibling() ;
+		//boolean found = false ;
+		//	Node currentNode = node1 ;
+		int indexnode1 = nl.indexOf(node1);
+		//System.out.println("[AnnotatedHtml.sameLevel] index of node1 : " + i);
+		int nbNode = nl.size();
+		for(int i = indexnode1 ; i < nbNode ; i++)
+		{
+			if(nl.elementAt(i).equals(node2)) return true ;
+		}
+		/*Node nextSibling = currentNode.getNextSibling() ;
 		while(nextSibling != null && !found)
 		{
 			if(nextSibling.equals(node2)) found = true ;
 			nextSibling = nextSibling.getNextSibling();
-		}
-		return found ;
+			System.out.println("[AnnotatedHtml.sameLevel] next sibling : " + nextSibling);
+		}*/
+		//return found ;
+		return false ;
 	}
 	/**
 	 * Tests if node1 has node2 as a child. Recursive method.
