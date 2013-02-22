@@ -298,30 +298,40 @@ $(document).ready(function($) {
 	{
 		var nodes = "{\"articleId\":\"" + articleId + "\", \"annotationsId\":[{";
 		
+		var i = 0;
+		
 		$(".selected").each(function()
 		{
 			var id = $(this).attr("id").substring(11);
 			nodes += "\"id\":\"" + id + "\",";
+			i++;
 		});
 		
-		nodes = nodes.substring(0, nodes.length - 1);
-		
-		nodes += "}]}";
-		
-		$.ajax(
+		if(i == 0)
 		{
-			headers: { 
-		        "Accept" : "text/plain; charset=utf-8",
-		    },
-			url: "/articleContentAnnotated",
-			type: "POST",
-			contentType:"application/json",
-			data: nodes,
-			dataType: "json",
-		}).always(function(data)
+			window.location.reload();
+		}
+		else
 		{
-			$("#article-" + articleId).html(data["responseText"]);
-		});
+			nodes = nodes.substring(0, nodes.length - 1);
+			
+			nodes += "}]}";
+			
+			$.ajax(
+			{
+				headers: { 
+			        "Accept" : "text/plain; charset=utf-8",
+			    },
+				url: "/articleContentAnnotated",
+				type: "POST",
+				contentType:"application/json",
+				data: nodes,
+				dataType: "json",
+			}).always(function(data)
+			{
+				$("#article-" + articleId).html(data["responseText"]);
+			});
+		}
 	}
 	
 });
