@@ -51,23 +51,26 @@
 		<ul>
 		    @for((annotation, i) <- annotations.zipWithIndex) {
 				@if(i % 2 == 0) {
-					<li class="alt">
+					<li class="alt block">
 				} else {
-					<li>
+					<li class="block">
 				}
 				<div class="annotation" id="annotation-@annotation.getId">
-				<h3><a href="/annotation/@annotation.getId">@annotation.getTitle</a></h3>
-				<div class="meta_infos">par <a href="/user/@annotation.getAuthor.getNickname">@annotation.getAuthor.getNickname</a></div>
-				Ce qui est dit : 
-				<div class="content">@Html(annotation.getContent)</div>
-				Au sujet de : 				
-				<div class="annotatedContent">@Html(annotation.getAnnotatedContent)</div>
-				
-				@if(annotation.getAuthor.getNickname.equals(session.get("nickname"))) {
-					@form(routes.UserProfile.deleteAnnotation(annotation.getId.toString)) {
-						<input type="submit" value="Supprimer cette annotation" class="btn" />
+					<h3><a href="/annotation/@annotation.getId">@annotation.getTitle</a></h3>
+					<div class="meta_infos">par <a href="/user/@annotation.getAuthor.getNickname">@annotation.getAuthor.getNickname</a></div>
+					
+					<h4>Ce qui est dit :</h4>
+					<div class="content">@Html(annotation.getContent)</div>
+					<h4>Au sujet de :</h4>		
+					<div class="annotatedContent">@Html(annotation.getAnnotatedContent)</div>
+					
+					@if(annotation.getAuthor.getNickname.equals(session.get("nickname"))) {
+						@form(routes.UserProfile.deleteAnnotation(annotation.getId.toString)) {
+							<input type="submit" value="Supprimer cette annotation" class="btn" />
+						}
 					}
-				}
+					
+					<button name="showRef" id="buttonAnnotation-@annotation.getId">Voir r&eacute;f&eacute;rence</button>
 				</div>
 			</li>
 		}
@@ -93,10 +96,10 @@
 <script type="text/javascript">
 $(document).ready(function($) {
 	
-	$("body").ajaxError(function(event, jqXHR, ajaxSettings, thrownError){
-            alert("ERROR : " + thrownError);
-            location.reload();
-        });
+// 	$("body").ajaxError(function(event, jqXHR, ajaxSettings, thrownError){
+//             alert("ERROR : " + thrownError);
+//             location.reload();
+//         });
         
     	$btnSelect = $(".btn-select");
 
@@ -205,69 +208,121 @@ $(document).ready(function($) {
 		}
 		else alert("Veuillez sélectionner une partie de l'article.");
 	});
-			/*
-			* Vérifie que le noeud est bien un fils du noeud d'id zoneAnnotable
-			**/
-			function testAnnotable(node)
+/*
+* Vérifie que le noeud est bien un fils du noeud d'id zoneAnnotable
+**/
+	function testAnnotable(node)
+	{
+		//alert("testAnnotable : " + node);
+		while(node.id != "zoneAnnotable")
+		{
+			node = node.parentNode ;
+			if(node.nodeName == 'BODY') return false ;
+		}
+		return true ;
+	}
+
+	/*
+	*
+	*Format d'un xPointer: 
+	*url_courant#xpointer(id('idNoeudPere')/chemin/des/peres, nbCaractereEntreNoeudEtSelection)
+	*ou si on ne trouve pas d'id de reference:
+	*url_courant#xpointer(body/chemin/des/peres, nbCaractereEntreNoeudEtSelection)
+	*
+	**/
+                        
+	//parametre: url courant, node de depart pour le calcul du xpointer et le offset (nb caractere entre node et le debut de la selection)
+	function makeXpointer(url, node, offset)
+	{
+		 var xpointer = url+"#xpointer(";
+		// var idNode = -1;
+		var idNode = node.id;
+		var path = "";
+		var nbPreviousSiblings = 0;
+		var previousNode;
+		//alert("calcul XPOINTER : nodeName avant while : " + node.nodeName);
+		//tant qu'on ne trouve pas de noeud avec un id
+		while(idNode == "" || idNode == -1)
+		{
+			//alert("calcul XPOINTER : nodeName while : " + node.nodeName);
+			//alert("calcul XPOINTER : idNode : " + idNode);
+			previousNode = node;
+			//calcul de la position du noeud actuel par rapport a son pere
+			nbPreviousSiblings = $(previousNode).prevAll().length;
+			path = "/" + nbPreviousSiblings + path;
+			node = previousNode.parentNode;
+			
+			//si le noeud actuel est la balise body on break la boucle car on est arrivé au bout sans trouver d'id
+			if(node.nodeName == 'BODY')
 			{
-				//alert("testAnnotable : " + node);
-				while(node.id != "zoneAnnotable")
-				{
-					node = node.parentNode ;
-					if(node.nodeName == 'BODY') return false ;
-				}
-				return true ;
-			}
-
-		            /*
-                             *
-                             *Format d'un xPointer: 
-                             *url_courant#xpointer(id('idNoeudPere')/chemin/des/peres, nbCaractereEntreNoeudEtSelection)
-                             *ou si on ne trouve pas d'id de reference:
-                             *url_courant#xpointer(body/chemin/des/peres, nbCaractereEntreNoeudEtSelection)
-                             *
-                             **/
+				break;
+			} 
+			
+			idNode = node.id;
+			//alert("calcul XPOINTER : change idNode");
+		}
+		
+		if(node.nodeName == 'BODY')
+		{
+		    xpointer = xpointer + "body"
+		}
+		else
+		{
+		    xpointer = xpointer + "id('" + idNode + "')";
+		}
+		xpointer = xpointer + path + "," + offset + ")";
+		return xpointer;
+	}
                             
-                            //parametre: url courant, node de depart pour le calcul du xpointer et le offset (nb caractere entre node et le debut de la selection)
-                            function makeXpointer(url, node, offset)
-                            {
-                                var xpointer = url+"#xpointer(";
-                               // var idNode = -1;
-				var idNode = node.id;
-                                var path = "";
-                                var nbPreviousSiblings = 0;
-                                var previousNode;
-                                //alert("calcul XPOINTER : nodeName avant while : " + node.nodeName);
-                                //tant qu'on ne trouve pas de noeud avec un id
-                                while(idNode == "" || idNode == -1)
-                                {
-				    //alert("calcul XPOINTER : nodeName while : " + node.nodeName);
-				    //alert("calcul XPOINTER : idNode : " + idNode);
-                                    previousNode = node;
-                                    //calcul de la position du noeud actuel par rapport a son pere
-                                    nbPreviousSiblings = $(previousNode).prevAll().length;
-                                    path = "/" + nbPreviousSiblings + path;
-                                    node = previousNode.parentNode;
-                                    
-                                    //si le noeud actuel est la balise body on break la boucle car on est arrivé au bout sans trouver d'id
-                                    if(node.nodeName == 'BODY')
-				    {
-                                        break;
-                                    } 
-				   idNode = node.id;
-				   //alert("calcul XPOINTER : change idNode");
-                                }
-                                if(node.nodeName == 'BODY')
-                                {
-                                    xpointer = xpointer + "body"
-                                }
-                                else
-                                {
-                                    xpointer = xpointer + "id('" + idNode + "')";
-                                }
-                                xpointer = xpointer + path + "," + offset + ")";
-                                return xpointer;
-                            }
-
+	$("button[id^='buttonAnnotation-']").click(function()
+	{
+		var annotationId = $(this).attr("id").substr(17);
+		
+		var annotationNode = $("div[id='annotation-" + annotationId + "']'");
+		
+		if($(annotationNode).hasClass("selected"))
+		{
+			$(annotationNode).removeClass("selected");
+		}
+		else
+		{
+			$(annotationNode).addClass("selected");
+		}
+		
+		var articleId = $("div[id^='article-']").attr("id").substring(8);
+		
+		highlight(articleId);
+	});
+	
+	function highlight(articleId)
+	{
+		var nodes = "{\"articleId\":\"" + articleId + "\", \"annotationsId\":[{";
+		
+		$(".selected").each(function()
+		{
+			var id = $(this).attr("id").substring(11);
+			nodes += "\"id\":\"" + id + "\",";
+		});
+		
+		nodes = nodes.substring(0, nodes.length - 1);
+		
+		nodes += "}]}";
+		
+		$.ajax(
+		{
+			headers: { 
+		        "Accept" : "text/plain; charset=utf-8",
+		    },
+			url: "/articleContentAnnotated",
+			type: "POST",
+			contentType:"application/json",
+			data: nodes,
+			dataType: "json",
+		}).always(function(data)
+		{
+			$("#article-" + articleId).html(data["responseText"]);
+		});
+	}
+	
 });
 </script>
