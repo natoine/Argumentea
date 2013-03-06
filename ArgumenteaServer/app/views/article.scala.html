@@ -102,6 +102,24 @@ $(document).ready(function($) {
 //         });
         
     	$btnSelect = $(".btn-select");
+    	
+    	/**
+    	*	Node correspond au textNode dans laquelle est la sÈlection
+    	*	Renvoi l'offset de la sÈlection par rapport au dÈbut du texte annotable
+    	*/
+    	function computeOffset(node, offset)
+    	{
+    		var computedOffset = offset;
+    		
+    		var currentNode = node.previousSibling;
+    		
+    		while(currentNode != null)
+    		{
+    			computedOffset += currentNode.textContent.length;
+    			currentNode = currentNode.previousSibling;
+    		}
+    		return computedOffset;
+    	}
 
 	//Pour r√©cup√©rer une s√©lection, un contenu et deux xpointers
 	$btnSelect.click(function(event) {
@@ -127,8 +145,10 @@ $(document).ready(function($) {
 			//alert("start_node" + start_node);
         		//alert("end_node :" + end_node );                        
                         //Le nombre de caractere entre le noeud pere et le debut/fin de la selection
-                        var start_offset = selection.anchorOffset; // NE TIENT PAS COMPTE DES CARACTERES HTML PRESENTS AVANT LA SELECTION JUSQU'AU NOEUD PERE
-                        var end_offset = selection.focusOffset;
+                        
+                        var start_offset = computeOffset(start_node, selection.anchorOffset);
+                        //var start_offset = selection.anchorOffset; // NE TIENT PAS COMPTE DES CARACTERES HTML PRESENTS AVANT LA SELECTION JUSQU'AU NOEUD PERE
+                        var end_offset = computeOffset(end_node, selection.focusOffset);
                         
 			//Corrections des noeuds de d√©part et de fin        
                         var trueStartNode = start_node ;

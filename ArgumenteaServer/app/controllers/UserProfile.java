@@ -35,7 +35,7 @@ public class UserProfile extends Controller
 		Collections.reverse(articles);
 		Collections.reverse(annotations);
 		
-		return ok(views.html.userprofile.render(articles, annotations));
+		return ok(views.html.userprofile.render(articles, annotations, flash("status"), flash("statusStyleCSS")));
 	}
 	
 	public static Result articles() 

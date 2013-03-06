@@ -1,6 +1,7 @@
 package models;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +37,8 @@ public class UserAccount
 	
 	@Required
 	private String hashedPassword;
+	
+	private Date creationDate;
 
 	
 	public ObjectId getId() {
@@ -113,6 +116,11 @@ public class UserAccount
 	{
 		return MorphiaObject.datastore.find(UserAccount.class).field("nickname").equal(nickname).get();
 	}
+	
+	public static UserAccount findByMail(String mail)
+	{
+		return MorphiaObject.datastore.find(UserAccount.class).field("email").equal(mail).get();
+	}
 
 	public String getHashedPassword() {
 		return hashedPassword;
@@ -149,5 +157,13 @@ public class UserAccount
 	public boolean isSameUser(UserAccount user)
 	{
 		return user.getId().equals(this.getId());
+	}
+
+	public Date getCreationDate() {
+		return creationDate;
+	}
+
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
 	}
 }

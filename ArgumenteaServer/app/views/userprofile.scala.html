@@ -1,11 +1,16 @@
-@(articles : List[Article], annotations : List[Annotation])
+@(articles : List[Article], annotations : List[Annotation], message: String, cssStyle : String)
 
 @main(session.get("nickname")) {
 	<h1>Espace personnel</h1>
 	
+	@if(message != null) {
+		<p class="@cssStyle">@Html(message)</p>
+	}
+	
 	<div class="center">
 	
 		<div class="box">
+			
 			<h2>Mes derniers articles</h2>
 			
 			@if(articles.size() != 0) {

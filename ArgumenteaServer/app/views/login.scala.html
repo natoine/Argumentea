@@ -1,4 +1,4 @@
-@(lform: Form[Login])
+@(lform: Form[Login], message: String, cssStyle : String)
 
 @import helper._
 
@@ -6,6 +6,11 @@
 
 <div class="center">
 	<div class="box">
+	
+		@if(message != null) {
+			<p class="@cssStyle">@Html(message)</p>
+		}
+	
 		<h1>Connexion</h1>
 		
 		<p>Afin d'acc&eacute;der &agrave; Argumentea, veuillez vous connecter :</p>

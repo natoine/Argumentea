@@ -1,4 +1,4 @@
-@(uaForm: Form[RegistrationForm])
+@(uaForm: Form[RegistrationForm], message: String, cssStyle : String)
 
 @import helper._
 
@@ -6,6 +6,10 @@
 	
 	<div class="center">
 		<div class="box">
+		
+		@if(message != null) {
+			<p class="@cssStyle">@Html(message)</p>
+		}
 	
 		<h1>Creer un nouveau compte</h1>
 		

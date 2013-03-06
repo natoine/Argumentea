@@ -1,5 +1,10 @@
 package models;
 
+/**
+ * Classe servant à mapper les champs du formulaire de création d'utilisateur
+ * @author NaturalPad
+ *
+ */
 public class RegistrationForm 
 {
 
@@ -10,8 +15,27 @@ public class RegistrationForm
 	public String lastname;
 	public String email;
 	
+	/**
+	 * Méthode de vérification des infos sur formulaire. Mettre ici toutes les contraintes sur l'inscription (unicité, passwords équivalents, etc)
+	 * @return message d'erreur s'il y en a un sinon null
+	 */
 	public String validate()
 	{
+		UserAccount testNickname = UserAccount.findByNickname(this.nickname);
+		UserAccount testMail = UserAccount.findByMail(this.email);
+		
+		if(this.password.length() < 4)
+			return "Le mot de passe doit contenir plus de 4 caractères.";
+		
+		if(!this.password.equals(this.passwordRepeat))
+			return "Les deux mots de passe ne sont pas identiques.";
+		
+		if(testNickname != null)
+			return "Ce nom d'utilisateur existe déjà.";
+		
+		if(testMail != null)
+			return "Cet email est déjà enregistré dans notre base de données.";
+		
 		return null;
 	}
 

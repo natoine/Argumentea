@@ -1,0 +1,18 @@
+@(annotations : List[Annotation])
+
+@main("DEBUG XPOINTER") {
+	
+	<ul>
+	
+	 @for(annotation <- annotations) {
+	 	<li>
+	 	<p>
+	 		<h3>@annotation.getTitle</h3>
+	 	
+	 		Debut XPointer : @annotation.getPointerBegin <br /><br />
+	 		Fin Xpointer : @annotation.getPointerEnd
+	 	</p>
+	 	</li>
+	 }
+	</ul>
+}

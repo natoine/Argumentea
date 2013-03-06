@@ -35,6 +35,9 @@ public class AnnotatedHtml
 		System.out.println("[AnnotatedHtml.highLight] startNode content : " + startNode.toHtml());
 		Node endNode = findNode(nl, end);
 		System.out.println("[AnnotatedHtml.highLight] endNode content : " + endNode.toHtml());
+		
+		System.out.println("WTF INDICES : [" + start.getIndice() + ";" + end.getIndice() + "]");
+		
 		addSpans(nl, startNode, endNode, start.getIndice(), end.getIndice(), color, annotationId);
 		System.out.println("[AnnotatedHtml.highLight] modified html : " + nl.toHtml()) ;
 		//sets the new Annotated HtmlContent
@@ -46,9 +49,9 @@ public class AnnotatedHtml
 		NodeList toreturn = new NodeList();
 		
 		String originalContent = node.getText() ;
-		String beforeSpan = originalContent.substring(0, indiceStart);
-		String contentAnnotated = originalContent.substring(indiceStart, indiceEnd);
-		String afterSpan = originalContent.substring(indiceEnd);
+		String beforeSpan = originalContent.substring(0, indiceStart + 1);
+		String contentAnnotated = originalContent.substring(indiceStart + 1, indiceEnd + 1);
+		String afterSpan = originalContent.substring(indiceEnd + 1);
 		System.out.println("[AnnotatedHtml.addSpanInTextNode] beforeSpan : " + beforeSpan);
 		System.out.println("[AnnotatedHtml.addSpanInTextNode] contentAnnotated : " + contentAnnotated);
 		System.out.println("[AnnotatedHtml.addSpanInTextNode] afterSpan : " + afterSpan);

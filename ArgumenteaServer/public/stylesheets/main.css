@@ -237,3 +237,30 @@ h4
 	font-style:italic;
 }
 
+.status_info
+{
+	border:3px solid #4c89e4;
+	background-color:#91b2e4;
+	color:#3270ce;
+	padding:20px;
+	font-weight:bold;
+}
+
+.status_error
+{
+	border:3px solid #ce3232;
+	background-color:#e0a9a9;
+	color:#ce3232;
+	padding:20px;
+	font-weight:bold;
+}
+
+.status_success
+{
+	border:3px solid #4ab13f;
+	background-color:#aee0a9;
+	color:#26a019;
+	padding:20px;
+	font-weight:bold;
+}
+
