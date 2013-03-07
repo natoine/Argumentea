@@ -30,16 +30,16 @@ public class AnnotatedHtml
 		Parser parser = Parser.createParser(htmlContent , null);
 		NodeList nl = parser.parse(null);
 		//seeThroughNodeList(0, nl);
-		System.out.println("[AnnotatedHtml.highLight] nl size : " + nl.size());
+		//System.out.println("[AnnotatedHtml.highLight] nl size : " + nl.size());
 		Node startNode = findNode(nl, start);
-		System.out.println("[AnnotatedHtml.highLight] startNode content : " + startNode.toHtml());
+		//System.out.println("[AnnotatedHtml.highLight] startNode content : " + startNode.toHtml());
 		Node endNode = findNode(nl, end);
-		System.out.println("[AnnotatedHtml.highLight] endNode content : " + endNode.toHtml());
+		//System.out.println("[AnnotatedHtml.highLight] endNode content : " + endNode.toHtml());
 		
-		System.out.println("WTF INDICES : [" + start.getIndice() + ";" + end.getIndice() + "]");
+		//System.out.println("WTF INDICES : [" + start.getIndice() + ";" + end.getIndice() + "]");
 		
 		addSpans(nl, startNode, endNode, start.getIndice(), end.getIndice(), color, annotationId);
-		System.out.println("[AnnotatedHtml.highLight] modified html : " + nl.toHtml()) ;
+		//System.out.println("[AnnotatedHtml.highLight] modified html : " + nl.toHtml()) ;
 		//sets the new Annotated HtmlContent
 		htmlContent = nl.toHtml();
 	}
@@ -52,9 +52,9 @@ public class AnnotatedHtml
 		String beforeSpan = originalContent.substring(0, indiceStart + 1);
 		String contentAnnotated = originalContent.substring(indiceStart + 1, indiceEnd + 1);
 		String afterSpan = originalContent.substring(indiceEnd + 1);
-		System.out.println("[AnnotatedHtml.addSpanInTextNode] beforeSpan : " + beforeSpan);
-		System.out.println("[AnnotatedHtml.addSpanInTextNode] contentAnnotated : " + contentAnnotated);
-		System.out.println("[AnnotatedHtml.addSpanInTextNode] afterSpan : " + afterSpan);
+		//System.out.println("[AnnotatedHtml.addSpanInTextNode] beforeSpan : " + beforeSpan);
+		//System.out.println("[AnnotatedHtml.addSpanInTextNode] contentAnnotated : " + contentAnnotated);
+		//System.out.println("[AnnotatedHtml.addSpanInTextNode] afterSpan : " + afterSpan);
 		
 		Span annotationSpan = new Span();
 		TagNode endSpan = new TagNode();
@@ -66,7 +66,7 @@ public class AnnotatedHtml
 		NodeList toAdd = new NodeList();
 		toAdd.add(new TextNode(contentAnnotated));
 		annotationSpan.setChildren(toAdd);
-		System.out.println("[AnnotatedHtml.addSpanInTextNode] Span : " + annotationSpan.toHtml());
+		//System.out.println("[AnnotatedHtml.addSpanInTextNode] Span : " + annotationSpan.toHtml());
 		
 		toreturn.add(new TextNode(beforeSpan));
 		toreturn.add(annotationSpan);
@@ -77,13 +77,13 @@ public class AnnotatedHtml
 	
 	private static void addSpanInANode(Node node, int indiceStart, int indiceEnd, String color, String annotationId)
 	{
-		System.out.println("[AnnotatedHtml.addSpanInANode]");
+		//System.out.println("[AnnotatedHtml.addSpanInANode]");
 		NodeList children = node.getChildren();
 		node.setChildren(null);
 		NodeList newChildren = new NodeList();
 		if(children != null)
 		{
-			System.out.println("[AnnotatedHtml.addSpanInANode] node has children");
+			//System.out.println("[AnnotatedHtml.addSpanInANode] node has children");
 			int currentIndiceStart = indiceStart ;
 			int currentIndiceEnd = indiceEnd ;
 			int nbNodes = children.size() ;
@@ -91,7 +91,7 @@ public class AnnotatedHtml
 			boolean done = false ;
 			while(cptNode < nbNodes && !done )
 			{
-				System.out.println(" child : " + cptNode + " class : " + children.elementAt(cptNode).getClass() + " content : " + children.elementAt(cptNode).toHtml());
+				//System.out.println(" child : " + cptNode + " class : " + children.elementAt(cptNode).getClass() + " content : " + children.elementAt(cptNode).toHtml());
 				Node currentNode = children.elementAt(cptNode) ;
 				if(currentNode instanceof TextNode)
 				{
@@ -121,7 +121,7 @@ public class AnnotatedHtml
 							if(currentIndiceEnd <= 0) 
 							{
 								done = true ;
-								System.out.println("[AnnotatedHtml.addSpanInANode] annotations done");
+								//System.out.println("[AnnotatedHtml.addSpanInANode] annotations done");
 							}
 						} 
 					}
@@ -139,7 +139,7 @@ public class AnnotatedHtml
 			}
 		}
 		node.setChildren(newChildren);
-		System.out.println("[AnnotatedHtml.addSpanInANode] new Node content : " + node.toHtml());
+		//System.out.println("[AnnotatedHtml.addSpanInANode] new Node content : " + node.toHtml());
 	}
 	
 	//TODO ajouter les balises span
@@ -148,42 +148,42 @@ public class AnnotatedHtml
 		//soit node1 == node2
 		if(node1.equals(node2))
 		{
-			System.out.println("[AnnotatedHtml.addSpans] same node");
+			//System.out.println("[AnnotatedHtml.addSpans] same node");
 			addSpanInANode(node1, indiceStart, indiceEnd, color, annotationId);
-			System.out.println("[AnnotatedHtml.addSpans] same node, new node content : " + node1.toHtml());
+			//System.out.println("[AnnotatedHtml.addSpans] same node, new node content : " + node1.toHtml());
 		}
 		else 
 		{
 			//soit node1 et node2 de même niveau
 			if(sameLevel(nl, node1, node2))
 			{
-				System.out.println("[AnnotatedHtml.addSpans] node of same level in the html tree and node1 before node2");
+				//System.out.println("[AnnotatedHtml.addSpans] node of same level in the html tree and node1 before node2");
 				
 			}
 			else
 			{
 				if(sameLevel(nl, node2, node1))
 				{
-					System.out.println("[AnnotatedHtml.addSpans] node of same level in the html tree and node2 before node1");
+					//System.out.println("[AnnotatedHtml.addSpans] node of same level in the html tree and node2 before node1");
 				}
 				else
 				{
 					//soit node1 fils de node2
 					if(hasChild(node1 , node2))
 					{
-						System.out.println("[AnnotatedHtml.addSpans] node2 child of node1");
+						//System.out.println("[AnnotatedHtml.addSpans] node2 child of node1");
 					}
 					else
 					{
 						//soit node2 fils de node1
 						if(hasChild(node2 , node1))
 						{
-							System.out.println("[AnnotatedHtml.addSpans] node1 child of node2");
+							//System.out.println("[AnnotatedHtml.addSpans] node1 child of node2");
 						}
 						else
 						{
 							//soit node1 et node2 pas de même niveau et pas fils l'un de l'autre
-							System.out.println("[AnnotatedHtml.addSpans] not child one of another");
+							//System.out.println("[AnnotatedHtml.addSpans] not child one of another");
 							//dans ce cas il faut trouver l'ensemble des noeuds entre les deux noeuds et il faut l'ordre entre start et end
 						}
 					}
@@ -259,9 +259,9 @@ public class AnnotatedHtml
 		if(nl != null) size = nl.size();
 		for(int i= 0 ; i < size ; i++)
 		{
-			System.out.println("level : " + level + " elt nb : " + i);
+			//System.out.println("level : " + level + " elt nb : " + i);
 			Node node = nl.elementAt(i);
-			System.out.println(node.toHtml());
+			//System.out.println(node.toHtml());
 			seeThroughNodeList(level + 1 , node.getChildren());
 		}
 	}
@@ -281,21 +281,21 @@ public class AnnotatedHtml
 		
 		while(cptNode < nbNode -1)
 		{
-			System.out.println("[AnnotatedHtml.findNode] cptNode : " + cptNode);
+			//System.out.println("[AnnotatedHtml.findNode] cptNode : " + cptNode);
 			String info = splitedXpointer.getXpointerTree()[cptNode];
 			try{// Pour l'instant on ne fabrique que des Xpointer avec des int après l'id de la ressource
 				Integer nextSibling = Integer.parseInt(info);
-				System.out.println("[AnnotatedHtml.findNode] nextSibling : " + nextSibling);
+				//System.out.println("[AnnotatedHtml.findNode] nextSibling : " + nextSibling);
 				//Attention, on ne peut pas juste aller chercher l'élément à nextSibling car la lib htmlParser compte les TextNode
 				//Donc il faut itérer et ignorer les TextNode
 				int cptGlobal = 0;
 				int cptWhithoutTextNode = 0 ;
 				while(cptWhithoutTextNode < nextSibling )
 				{
-					System.out.println("[AnnotatedHtml.findNode] in while next node : " + nl.elementAt(cptGlobal).toHtml());
+					//System.out.println("[AnnotatedHtml.findNode] in while next node : " + nl.elementAt(cptGlobal).toHtml());
 					if(! (nl.elementAt(cptGlobal) instanceof TextNode)) cptWhithoutTextNode ++ ;
 					cptGlobal ++ ;
-					System.out.println("[AnnotatedHtml.findNode] cptWithoutTexteNode : " + cptWhithoutTextNode + " cptGlobal : " + cptGlobal);
+					//System.out.println("[AnnotatedHtml.findNode] cptWithoutTexteNode : " + cptWhithoutTextNode + " cptGlobal : " + cptGlobal);
 				}
 				Node testTextNode = currentNodeList.elementAt(cptGlobal) ;
 				while(testTextNode instanceof TextNode) 
@@ -303,13 +303,13 @@ public class AnnotatedHtml
 					cptGlobal ++ ;
 					testTextNode = currentNodeList.elementAt(cptGlobal) ;
 				}
-				System.out.println("[AnnotatedHtml.findNode] cptGlobal : " + cptGlobal);
+				//System.out.println("[AnnotatedHtml.findNode] cptGlobal : " + cptGlobal);
 				currentNodeList = testTextNode.getChildren();
 			}
 			catch (NumberFormatException exception) // La syntaxe Xpointer permet d'autres cibles que des int
 			{
 				exception.printStackTrace();
-				System.out.println("[AnnotatedHtml.findNode] nextSibling is not an integer !!!");
+				//System.out.println("[AnnotatedHtml.findNode] nextSibling is not an integer !!!");
 				//TODO gérer les autres syntaxes XPointer
 			}
 			cptNode ++ ;
@@ -331,7 +331,7 @@ public class AnnotatedHtml
 		catch (NumberFormatException exception) // La syntaxe Xpointer permet d'autres cibles que des int
 		{
 			exception.printStackTrace();
-			System.out.println("[AnnotatedHtml.findNode] nextSibling is not an integer !!!");
+			//System.out.println("[AnnotatedHtml.findNode] nextSibling is not an integer !!!");
 			//TODO gérer les autres syntaxes XPointer
 		}
 		//return currentNodeList.elementAt(0) ;

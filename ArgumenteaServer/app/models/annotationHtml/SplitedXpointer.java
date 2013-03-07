@@ -34,14 +34,14 @@ public class SplitedXpointer
 	
 	public static SplitedXpointer createXpointer( String xpointer , SplitedXpointer splitedXpointer)
 	{
-		System.out.println("[SplitedXpointer.createNode] raw xpointer : " + xpointer);
+		//System.out.println("[SplitedXpointer.createNode] raw xpointer : " + xpointer);
 		splitedXpointer.setXpointerTree( xpointerSplit(xpointer) );
 		splitedXpointer.setIndice(getTextPositionXpointer(xpointer)); 
-		System.out.println("[SplitedXpointer.createNode] indiceStart : " + splitedXpointer.indice);
-		System.out.println("[SplitedXpointer.createNode] SplitedXpointerTree : ");
+		//System.out.println("[SplitedXpointer.createNode] indiceStart : " + splitedXpointer.indice);
+		//System.out.println("[SplitedXpointer.createNode] SplitedXpointerTree : ");
 		for(int i = 0 ; i < splitedXpointer.xpointerTree.length ; i++)
 		{
-			System.out.println("" + splitedXpointer.xpointerTree[i]);
+			//System.out.println("" + splitedXpointer.xpointerTree[i]);
 		}
 		return splitedXpointer ;
 	}

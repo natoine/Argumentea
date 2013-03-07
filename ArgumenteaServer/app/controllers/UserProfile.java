@@ -108,16 +108,22 @@ public class UserProfile extends Controller
 		
 		if( ! articleId.equals(""))
 		{
+			
 			Article article = Article.findById(articleId);
-			String htmlContent = article.getContent() ;
+			String htmlContent = article.getContent();
 			//System.out.println(htmlContent);
-			List<String> annotationsId = json.get("annotationsId").findValuesAsText("id");
+			List<String> annotationsId = json.get("annotationsId").findValuesAsText("wut");
+			
+			//System.out.println("MY JSON = " + json);
+			
 			//System.out.println("nb annotations : " + annotationsId.size());
 			AnnotatedHtml annotatedHtml = new AnnotatedHtml(htmlContent);
 			SplitedXpointer splitedXpointerStart = new SplitedXpointer();
 			SplitedXpointer splitedXpointerEnd = new SplitedXpointer();
 			for(String annotationId : annotationsId)
 			{
+				//System.out.println("Trying to find annotation with id : " + annotationId);
+				
 				Annotation annotation = Annotation.findById(annotationId);
 				splitedXpointerStart = SplitedXpointer.createXpointer(annotation.getPointerBegin(), splitedXpointerStart);
 				splitedXpointerEnd = SplitedXpointer.createXpointer(annotation.getPointerEnd(), splitedXpointerEnd);
@@ -127,7 +133,7 @@ public class UserProfile extends Controller
 				} catch (ParserException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-					System.out.println("not able to parse HTML !");
+					//System.out.println("not able to parse HTML !");
 				}
 			}
 			return ok(annotatedHtml.getHtmlContent());
