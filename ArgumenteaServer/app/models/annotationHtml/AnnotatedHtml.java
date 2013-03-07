@@ -25,22 +25,38 @@ public class AnnotatedHtml
 		this.htmlContent = htmlContent;
 	}
 
+	/**
+	 * Returns true if node1 is before node2 in the dom
+	 * @param node1
+	 * @param node2
+	 * @return
+	 */
+	private boolean isPreceedingNode(Node node1, Node node2)
+	{
+		Node currentNode = node1 ;
+		while(currentNode != null)
+		{
+			if(currentNode.equals(node2)) return false;
+			if(currentNode.getPreviousSibling() != null) currentNode = currentNode.getPreviousSibling() ;
+			else currentNode = currentNode.getParent();
+		}
+		return true ;
+	}
+	
 	public void highLight(SplitedXpointer start , SplitedXpointer end, String color, String annotationId) throws ParserException //throws ParserException
 	{
 		Parser parser = Parser.createParser(htmlContent , null);
 		NodeList nl = parser.parse(null);
-		//seeThroughNodeList(0, nl);
-		//System.out.println("[AnnotatedHtml.highLight] nl size : " + nl.size());
-		Node startNode = findNode(nl, start);
-		//System.out.println("[AnnotatedHtml.highLight] startNode content : " + startNode.toHtml());
-		Node endNode = findNode(nl, end);
-		//System.out.println("[AnnotatedHtml.highLight] endNode content : " + endNode.toHtml());
-		
-		//System.out.println("WTF INDICES : [" + start.getIndice() + ";" + end.getIndice() + "]");
-		
-		addSpans(nl, startNode, endNode, start.getIndice(), end.getIndice(), color, annotationId);
-		//System.out.println("[AnnotatedHtml.highLight] modified html : " + nl.toHtml()) ;
-		//sets the new Annotated HtmlContent
+		Node announcedStartNode = findNode(nl, start);
+		Node announcedEndNode = findNode(nl, end);
+		//vérifier l'ordre des noeuds dans l'arbre
+		if(announcedStartNode.equals(announcedEndNode))
+		{
+			if(start.getIndice() < end.getIndice()) addSpans(nl, announcedStartNode, announcedEndNode, start.getIndice(), end.getIndice(), color, annotationId);
+			else addSpans(nl, announcedStartNode, announcedEndNode, end.getIndice(), start.getIndice(), color, annotationId);
+		}
+		else if(isPreceedingNode(announcedStartNode , announcedEndNode)) addSpans(nl, announcedStartNode, announcedEndNode, start.getIndice(), end.getIndice(), color, annotationId);
+		else addSpans(nl, announcedEndNode, announcedStartNode, end.getIndice(), start.getIndice(), color, annotationId);
 		htmlContent = nl.toHtml();
 	}
 	

@@ -109,30 +109,32 @@ $(document).ready(function($) {
     	*/
     	function computeOffset(node, offset)
     	{
-    		var computedOffset = offset;
+		var computedOffset = offset;
     		
     		var currentNode = node.previousSibling;
-    		
+
     		while(currentNode != null)
     		{
-    			computedOffset += currentNode.textContent.length;
+			computedOffset += currentNode.textContent.length;
     			currentNode = currentNode.previousSibling;
     		}
+		//Tester si le pËre n'est pas une span d'annotation
+		if(node.parentNode.id.indexOf("annotationSpan-") != -1)
+		{
+			computedOffset = computeOffset(node.parentNode, computedOffset);
+		}
     		return computedOffset;
     	}
 
 	//Pour r√©cup√©rer une s√©lection, un contenu et deux xpointers
 	$btnSelect.click(function(event) {
-	 	//alert("click");
-		//recuperation de la selection en cours
+	 	//recuperation de la selection en cours
         	var selection = window.getSelection();
 		//v√©rifier que la s√©lection n'est pas vide
 		if(selection.toString().length > 0)
                 {
 			var content = selection.toString();
 			var currentUrl = window.location;
-			//alert("content : " + content);
-			//alert("currentUrl : " + currentUrl);
 			//Test du Browser
 			//TODO
 			//XPOINTER Mozilla
@@ -142,15 +144,11 @@ $(document).ready(function($) {
                         //Noeuds du d√©but et de la fin de la selection
                         var start_node = selection.anchorNode;//selection.startContainer;
                         var end_node = selection.focusNode;//selection.endContainer;
-			//alert("start_node" + start_node);
-        		//alert("end_node :" + end_node );                        
-                        //Le nombre de caractere entre le noeud pere et le debut/fin de la selection
+		        //Le nombre de caractere entre le noeud pere et le debut/fin de la selection
                         
                         var start_offset = computeOffset(start_node, selection.anchorOffset);
-                        //var start_offset = selection.anchorOffset; // NE TIENT PAS COMPTE DES CARACTERES HTML PRESENTS AVANT LA SELECTION JUSQU'AU NOEUD PERE
-                        var end_offset = computeOffset(end_node, selection.focusOffset);
-                        
-			//Corrections des noeuds de d√©part et de fin        
+                       var end_offset = computeOffset(end_node, selection.focusOffset);
+                       //Corrections des noeuds de d√©part et de fin        
                         var trueStartNode = start_node ;
                         var trueEndNode = end_node;
                             
@@ -169,6 +167,7 @@ $(document).ready(function($) {
                         //echange trueStartNode et trueEndNode quand le cas ou on fait une selection invers√© (on commence de la fin)
                         //cas ou le noeud de depart precede le noeud d'arrive
                         //ou bien le noeud de depart est contenu dans le noeud d'arrive 
+			//Attention Áa ne couvre pas tous les cas... ‡ cause des span d'annotation ajoutÈes donc il faut un traitement cÙtÈ serveur
                         if(trueStartNode.compareDocumentPosition(trueEndNode) == 2 || 
                            trueStartNode.compareDocumentPosition(trueEndNode) == 10)
                         {
@@ -195,22 +194,16 @@ $(document).ready(function($) {
 				{
 				        xpointerStart = makeXpointer(currentUrl, trueStartNode, start_offset);
 				        xpointerEnd = makeXpointer(currentUrl, trueEndNode, end_offset);
-					//alert(xpointerStart);
-				        //alert(xpointerEnd);
-					//alert(content);
-					//alert(currentUrl);
 					var iframe = $("iframe").contents();					
 					$textAreaContent = $(iframe).find("body").html();
 					var annotationContent = $textAreaContent;
 					alert(annotationContent);
 					$title = $("#AnnotationFormTitle");
 					var annotationTitle = $title.val() ;
-					//alert(annotationTitle);
 					if(annotationContent.length == 0) alert("Veuillez saisir le contenu de votre annotation");
 					else //cr√©ation de l'annotation 
 					{
 						var annotatedId = $("div[id^='article-']").attr("id").substring(8);
-						//alert("envoi du json");
 						$.ajax({
 					                type: 'POST',
 					                url: "@routes.UserProfile.newAnnotationJson()",
@@ -233,7 +226,6 @@ $(document).ready(function($) {
 **/
 	function testAnnotable(node)
 	{
-		//alert("testAnnotable : " + node);
 		while(node.id != "zoneAnnotable")
 		{
 			node = node.parentNode ;
@@ -260,16 +252,17 @@ $(document).ready(function($) {
 		var path = "";
 		var nbPreviousSiblings = 0;
 		var previousNode;
-		//alert("calcul XPOINTER : nodeName avant while : " + node.nodeName);
-		//tant qu'on ne trouve pas de noeud avec un id
-		while(idNode == "" || idNode == -1)
+		//tant qu'on ne trouve pas de noeud avec un id et il faut ignorer les id des span annotÈes
+		while(idNode == "" || idNode == -1 || idNode.indexOf("annotationSpan-") != -1)
 		{
-			//alert("calcul XPOINTER : nodeName while : " + node.nodeName);
-			//alert("calcul XPOINTER : idNode : " + idNode);
 			previousNode = node;
-			//calcul de la position du noeud actuel par rapport a son pere
-			nbPreviousSiblings = $(previousNode).prevAll().length;
-			path = "/" + nbPreviousSiblings + path;
+			//ignorer les span d'annotation
+			if(idNode.indexOf("annotationSpan-") == -1)
+			{
+				//calcul de la position du noeud actuel par rapport a son pere
+				nbPreviousSiblings = $(previousNode).prevAll().length;
+				path = "/" + nbPreviousSiblings + path;
+			}
 			node = previousNode.parentNode;
 			
 			//si le noeud actuel est la balise body on break la boucle car on est arriv√© au bout sans trouver d'id
@@ -279,7 +272,6 @@ $(document).ready(function($) {
 			} 
 			
 			idNode = node.id;
-			//alert("calcul XPOINTER : change idNode");
 		}
 		
 		if(node.nodeName == 'BODY')
@@ -334,7 +326,6 @@ $(document).ready(function($) {
 		else
 		{
 			nodes = nodes.substring(0, nodes.length - 1);
-			
 			nodes += "]}";
 			
 			$.ajax(
