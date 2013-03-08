@@ -1,21 +1,31 @@
 package controllers;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import models.Annotation;
 import models.Login;
+import models.PasswordForm;
+import models.PwdRecoveryHolder;
+import models.RecoveryForm;
 import models.RegistrationForm;
 import models.UserAccount;
 import play.Logger;
+import play.Play;
 import play.data.Form;
 import play.data.validation.ValidationError;
+import play.i18n.Messages;
 import play.mvc.Controller;
 import play.mvc.Result;
 import views.html.index;
 
 import com.mongodb.MongoException.DuplicateKey;
+import com.typesafe.plugin.MailerAPI;
+import com.typesafe.plugin.MailerPlugin;
 
 public class Application extends Controller 
 {
@@ -178,21 +188,6 @@ public class Application extends Controller
 		return strError;
 	}
 	
-	public static Result passwordRecoveryForm()
-	{
-		return ok();
-		//return ok(views.html.passwordRecovery.render(flash("status"), flash("statusStyleCSS")));
-	}
-	
-	public static Result passwordRecovery(String email)
-	{
-		//UserAccount account = UserAccount.findByMail(email);
-		
-		//MailerAPI mail = play.Play.application().plugin(MailerPlugin.class).email();
-		
-		return ok();
-	}
-	
 	public static Result index() throws Exception 
 	{
 		if(session("nickname") != null)
@@ -232,5 +227,128 @@ public class Application extends Controller
 		List<Annotation> annotations = Annotation.allAnnotation();
 		
 		return ok(views.html.showXPointer.render(annotations));
+	}
+	
+	/**
+	 * Affichage du formulaire de saisie du mail pour le changement de mot de passe
+	 * @return
+	 */
+	public static Result passwordRecoveryForm()
+	{
+		return ok(views.html.passwordRecovery.render(flash("status"), flash("statusStyleCSS")));
+	}
+	
+	/**
+	 * Vérification après la soumission du mail pour la récupération de mot de passe
+	 * @return
+	 */
+	public static Result passwordRecovery()
+	{
+		Form<RecoveryForm> form = form(RecoveryForm.class).bindFromRequest();
+		Map<String, List<ValidationError>> errors = form.errors();
+		
+		if(form.hasErrors())
+		{
+			flash("status", Messages.get("errorform") + " :<br />" + Application.getHTMLReadableErrors(errors));
+			flash("statusStyleCSS", "status_error");
+			return redirect(routes.Application.passwordRecoveryForm());
+		}
+		else
+		{
+			String email = form.field("email").value();
+			UserAccount account = UserAccount.findByMail(email);
+			
+			String randomHash = Secured.hash(UUID.randomUUID().toString());
+			
+			MailerAPI mail = play.Play.application().plugin(MailerPlugin.class).email();
+			mail.setSubject(Messages.get("recovery.mail.header"));
+			mail.addRecipient(email);
+			mail.addFrom("test@naturalpad.org");
+			try {
+				String link = "http://" + Play.application().configuration().getString("application.baseURL") + ":" + Play.application().configuration().getString("application.http.port") + "/recover/" + URLEncoder.encode(randomHash, "UTF-8");
+				mail.send(Messages.get("recovery.mail.content", account.getNickname(), link));
+				PwdRecoveryHolder holder = new PwdRecoveryHolder();
+				holder.setRandomHash(randomHash);
+				holder.setExpireDate(new Date(System.currentTimeMillis() + 1000 * 60 * 60)); // 1 heure de temps d'expiration
+				holder.setUser(account);
+				
+				PwdRecoveryHolder.create(holder);
+				
+				flash("status", Messages.get("recovery.status.success"));
+				flash("statusStyleCSS", "status_info");
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+			
+			return redirect(routes.Application.login());
+		}
+	}
+	
+	/**
+	 * Affichage du formulaire de changement de mot de passe pour la recovery
+	 * @param hash
+	 * @return
+	 */
+	public static Result recoveryForm(String hash)
+	{
+		PwdRecoveryHolder holder = PwdRecoveryHolder.findByHash(hash);
+		
+		if(holder != null && hash != null && !hash.isEmpty())
+		{
+			if(holder.getExpireDate().after(new Date()))
+			{
+				return ok(views.html.recoveryCheck.render(hash));
+			}
+			else
+			{
+				flash("status", Messages.get("recovery.status.expire"));
+				flash("statusStyleCSS", "status_error");
+				return redirect(routes.Application.login());
+			}
+		}
+		else
+		{
+			flash("status", Messages.get("recovery.status.usernotfound"));
+			flash("statusStyleCSS", "status_error");
+			return redirect(routes.Application.login());
+		}
+	}
+	
+	/**
+	 * Vérification du nouveau mot de passe
+	 * @param hash
+	 * @param userId
+	 * @return
+	 */
+	public static Result recoveryCheck()
+	{
+		Form<PasswordForm> form = form(PasswordForm.class).bindFromRequest();
+		Map<String, List<ValidationError>> errors = form.errors();
+		
+		String hash = form.field("hash").value();
+		
+		if(form.hasErrors()) 
+		{
+			flash("status", Messages.get("errorform") + " :<br />" + Application.getHTMLReadableErrors(errors));
+			flash("statusStyleCSS", "status_error");
+			return redirect(routes.Application.recoveryForm(hash));
+		}
+		else
+		{
+			String password = form.field("password").value();
+			
+			PwdRecoveryHolder holder = PwdRecoveryHolder.findByHash(hash);
+			
+			UserAccount account = UserAccount.findById(holder.user.getId());
+			account.setHashedPassword(Secured.hash(password));
+			MorphiaObject.datastore.save(account);
+			
+			PwdRecoveryHolder.delete(holder.getId());
+			
+			flash("status", Messages.get("recovery.status.changepassword"));
+			flash("statusStyleCSS", "status_success");
+			
+			return redirect(routes.Application.login());
+		}
 	}
 }

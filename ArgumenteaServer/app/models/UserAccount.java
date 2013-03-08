@@ -121,6 +121,16 @@ public class UserAccount
 	{
 		return MorphiaObject.datastore.find(UserAccount.class).field("email").equal(mail).get();
 	}
+	
+	public static UserAccount findById(String id)
+	{
+		return MorphiaObject.datastore.find(UserAccount.class).field("_id").equal(new ObjectId(id)).get();
+	}
+	
+	public static UserAccount findById(ObjectId id)
+	{
+		return MorphiaObject.datastore.find(UserAccount.class).field("_id").equal(id).get();
+	}
 
 	public String getHashedPassword() {
 		return hashedPassword;

@@ -25,7 +25,7 @@ public class RegistrationForm
 		UserAccount testMail = UserAccount.findByMail(this.email);
 		
 		if(this.password.length() < 4)
-			return "Le mot de passe doit contenir plus de 4 caractères.";
+			return "Le mot de passe doit contenir au moins 4 caractères.";
 		
 		if(!this.password.equals(this.passwordRepeat))
 			return "Les deux mots de passe ne sont pas identiques.";

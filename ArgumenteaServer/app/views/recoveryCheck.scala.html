@@ -1,0 +1,20 @@
+@(hash: String)
+
+@import play.i18n._
+
+@main("Récupération de mot de passe") {
+
+	<h1>@(Messages.get("recoveryCheck.h1"))</h1>
+	
+	<p>@(Messages.get("recoveryCheck.info"))</p>
+	
+	@helper.form(action = routes.Application.recoveryCheck()) {
+		@(Messages.get("recoveryCheck.password")) : <br />
+		<input type="text" name="password" /><br /><br />
+		@(Messages.get("recoveryCheck.password.verify")) :<br />
+		<input type="password" name="passwordRepeat" /><br /><br />
+		<input type="hidden" name="hash" value="@hash" />
+		<input type="submit" value="@(Messages.get("recoveryCheck.button.submit"))" />
+	}
+
+}
