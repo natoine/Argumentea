@@ -25,22 +25,38 @@ public class AnnotatedHtml
 		this.htmlContent = htmlContent;
 	}
 
+	/**
+	 * Returns true if node1 is before node2 in the dom
+	 * @param node1
+	 * @param node2
+	 * @return
+	 */
+	private boolean isPreceedingNode(Node node1, Node node2)
+	{
+		Node currentNode = node1 ;
+		while(currentNode != null)
+		{
+			if(currentNode.equals(node2)) return false;
+			if(currentNode.getPreviousSibling() != null) currentNode = currentNode.getPreviousSibling() ;
+			else currentNode = currentNode.getParent();
+		}
+		return true ;
+	}
+	
 	public void highLight(SplitedXpointer start , SplitedXpointer end, String color, String annotationId) throws ParserException //throws ParserException
 	{
 		Parser parser = Parser.createParser(htmlContent , null);
 		NodeList nl = parser.parse(null);
-		//seeThroughNodeList(0, nl);
-		//System.out.println("[AnnotatedHtml.highLight] nl size : " + nl.size());
-		Node startNode = findNode(nl, start);
-		//System.out.println("[AnnotatedHtml.highLight] startNode content : " + startNode.toHtml());
-		Node endNode = findNode(nl, end);
-		//System.out.println("[AnnotatedHtml.highLight] endNode content : " + endNode.toHtml());
-		
-		//System.out.println("WTF INDICES : [" + start.getIndice() + ";" + end.getIndice() + "]");
-		
-		addSpans(nl, startNode, endNode, start.getIndice(), end.getIndice(), color, annotationId);
-		//System.out.println("[AnnotatedHtml.highLight] modified html : " + nl.toHtml()) ;
-		//sets the new Annotated HtmlContent
+		Node announcedStartNode = findNode(nl, start);
+		Node announcedEndNode = findNode(nl, end);
+		//vérifier l'ordre des noeuds dans l'arbre
+		if(announcedStartNode.equals(announcedEndNode))
+		{
+			if(start.getIndice() < end.getIndice()) addSpans(nl, announcedStartNode, announcedEndNode, start.getIndice(), end.getIndice(), color, annotationId);
+			else addSpans(nl, announcedStartNode, announcedEndNode, end.getIndice(), start.getIndice(), color, annotationId);
+		}
+		else if(isPreceedingNode(announcedStartNode , announcedEndNode)) addSpans(nl, announcedStartNode, announcedEndNode, start.getIndice(), end.getIndice(), color, annotationId);
+		else addSpans(nl, announcedEndNode, announcedStartNode, end.getIndice(), start.getIndice(), color, annotationId);
 		htmlContent = nl.toHtml();
 	}
 	
@@ -89,10 +105,11 @@ public class AnnotatedHtml
 			int nbNodes = children.size() ;
 			int cptNode = 0 ;
 			boolean done = false ;
+			Node currentNode ;
 			while(cptNode < nbNodes && !done )
 			{
-				//System.out.println(" child : " + cptNode + " class : " + children.elementAt(cptNode).getClass() + " content : " + children.elementAt(cptNode).toHtml());
-				Node currentNode = children.elementAt(cptNode) ;
+				System.out.println(" child : " + cptNode + " class : " + children.elementAt(cptNode).getClass() + " content : " + children.elementAt(cptNode).toHtml());
+				currentNode = children.elementAt(cptNode) ;
 				if(currentNode instanceof TextNode)
 				{
 					int contentLength = currentNode.getText().length() ;
@@ -126,7 +143,52 @@ public class AnnotatedHtml
 						} 
 					}
 				}
+				else
+				{
+					//penser à gérer les annotations déjà faites
+					if(currentNode instanceof Span)
+					{
+						Span currentSpan = (Span)currentNode ;
+						if(currentSpan.getAttribute("class").equalsIgnoreCase("annotated-coloration")) // on s'occupe que des Span d'annotations
+						{
+							NodeList spanChildren = currentSpan.getChildren();
+							int nbChlidrenSpan = spanChildren.size() ;
+							for(int cptChildrenSpan = 0 ; cptChildrenSpan < nbChlidrenSpan ; cptChildrenSpan ++)
+							{
+								int toSubstract = getRecursiveLengthAnnotatedSpan(spanChildren.elementAt(cptChildrenSpan) , 0) ;
+								if(toSubstract < currentIndiceStart)//dans ce cas l'annotation est avant ce qui nous intéresse
+								{
+									currentIndiceStart = currentIndiceStart - toSubstract ;
+									currentIndiceEnd = currentIndiceEnd - toSubstract ;
+									System.out.println("[AnnotatedHtml.addSpanInANode] span d'annotation prise en compte");
+								}
+								else
+								{
+									//toute l'annotation est dans cette Span et ses fils ...
+									if(toSubstract > currentIndiceEnd) 
+									{
+										//TODO
+									}
+									else // l'annotation est à cheval ...
+									{
+										//TODO
+									}
+								}
+							}
+						}
+					}
+					newChildren.add(currentNode);
+				}
 				cptNode ++ ;
+			}
+			if(cptNode < nbNodes) // il faut traiter les autres noeuds
+			{
+				while(cptNode < nbNodes)
+				{
+					currentNode = children.elementAt(cptNode) ;
+					newChildren.add(currentNode);
+					cptNode ++ ;
+				}
 			}
 		}
 		else
@@ -140,6 +202,23 @@ public class AnnotatedHtml
 		}
 		node.setChildren(newChildren);
 		//System.out.println("[AnnotatedHtml.addSpanInANode] new Node content : " + node.toHtml());
+	}
+	
+	//renvoie la longueur de la somme de tous les textnodes des noeuds fils
+	public static int getRecursiveLengthAnnotatedSpan(Node node, int length)
+	{
+		int _length = length ;
+		if(node instanceof TextNode) _length += ((TextNode)node).getText().length();
+		else
+		{
+			NodeList children = node.getChildren();
+			int nbChild = children.size() ;
+			for(int cptChild = 0 ; cptChild < nbChild ; cptChild ++)
+			{
+				_length += getRecursiveLengthAnnotatedSpan(children.elementAt(cptChild) , _length);
+			}
+		}
+		return _length ;
 	}
 	
 	//TODO ajouter les balises span
