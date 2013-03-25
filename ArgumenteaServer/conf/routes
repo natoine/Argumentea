@@ -36,7 +36,8 @@ POST	/articleContentAnnotated	controllers.UserProfile.getArticleContentAnnotated
 #Annotation
 GET		/annotations				controllers.UserProfile.annotations()
 POST	/annotations				controllers.UserProfile.newAnnotation()
-POST	/annotationsJSON			controllers.UserProfile.newAnnotationJson()
+#POST	/annotationsJSON			controllers.UserProfile.newAnnotationJson()
+POST	/annotationsJSON			controllers.UserProfile.newAnnotationJgtJson()
 POST	/annotations/:id/delete		controllers.UserProfile.deleteAnnotation(id: String)
 GET		/annotation/:id				controllers.UserProfile.annotation(id: String, page: Integer ?= 0)
 GET		/annotation/:id/:page		controllers.UserProfile.annotation(id: String, page: Integer)

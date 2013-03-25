@@ -9,6 +9,7 @@ import org.codehaus.jackson.JsonNode;
 import org.htmlparser.util.ParserException;
 
 import models.Annotation;
+import models.AnnotationJudgment;
 import models.Article;
 import models.Resource;
 import models.UserAccount;
@@ -24,6 +25,7 @@ public class UserProfile extends Controller
 {
 	protected static Form<Article> articleForm = form(Article.class);
 	protected static Form<Annotation> annotationForm = form(Annotation.class);
+	protected static Form<AnnotationJudgment> annotationJgtForm = form(AnnotationJudgment.class);
 	
 	public static Result index()
 	{
@@ -151,6 +153,36 @@ public class UserProfile extends Controller
 	{
 		List<Annotation> annotations = Annotation.findByResourceId(id);		
 		return ok(views.html.annotations.render(annotations, annotationForm));
+	}
+	
+	public static Result newAnnotationJgtJson()
+	{
+		JsonNode json = request().body().asJson();
+		Map<String, String> anyData = new HashMap<String, String>();
+		anyData.put("pointerBegin", json.get("pointerBegin").asText()) ;
+		anyData.put("pointerEnd", json.get("pointerEnd").asText());
+		anyData.put("title", json.get("title").asText());
+		anyData.put("content", json.get("content").asText());
+		anyData.put("reformulation", json.get("reformulation").asText());
+		anyData.put("jugement", json.get("jugement").asText());
+		anyData.put("annotatedContent", json.get("annotatedContent").asText());
+		UserAccount author = UserAccount.findByNickname(session("nickname"));
+		anyData.put("author.id", author.getId().toString());
+		String annotatedId = json.get("annotatedId").asText();
+		System.out.println("annotatedId : " + annotatedId);
+		Resource annotated = Resource.findById(annotatedId);
+		Form<AnnotationJudgment> filledForm = annotationJgtForm.bind(anyData);
+		if(filledForm.hasErrors()) 
+		{
+			return badRequest();
+		}
+		else
+		{
+			AnnotationJudgment annotation = filledForm.get();
+			annotation.setAnnotated(annotated);
+			AnnotationJudgment.create(annotation);
+			return ok();
+		}
 	}
 	
 	public static Result newAnnotationJson()

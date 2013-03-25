@@ -16,6 +16,7 @@
 			}	
 			
 			$("#AnnotationFormContent").elrte(opts);
+			//$("#AnnotationFormReformulation").elrte(opts);
 		});
 	</script>
 
@@ -43,6 +44,8 @@
 		<div class="formAnnotation">
 			Titre : <br />
 			<input type="text" id="AnnotationFormTitle" style="width:100%" /><br />
+			Jugement : <br /><textarea id="AnnotationFormJgmt" cols="50" name="jugement"></textarea><br />
+			Reformulation : <br /><textarea id="AnnotationFormReformulation" cols="50" name="reformulation"></textarea><br />
 			Contenu de l'annotation : <br /><textarea id="AnnotationFormContent" cols="50" name="content"></textarea><br />
 			<button class="btn btn-select" type ="button">S&eacute;lectionner</button>
 		</div>
@@ -194,21 +197,28 @@ $(document).ready(function($) {
 				{
 				        xpointerStart = makeXpointer(currentUrl, trueStartNode, start_offset);
 				        xpointerEnd = makeXpointer(currentUrl, trueEndNode, end_offset);
+					
 					var iframe = $("iframe").contents();					
 					$textAreaContent = $(iframe).find("body").html();
 					var annotationContent = $textAreaContent;
-					alert(annotationContent);
+					//alert(annotationContent);
+
+					$reform = $("#AnnotationFormReformulation");
+					var reformulation = $reform.val();
+
 					$title = $("#AnnotationFormTitle");
 					var annotationTitle = $title.val() ;
+					$jgt = $("#AnnotationFormJgmt");
+					var jugement = $jgt.val();
 					if(annotationContent.length == 0) alert("Veuillez saisir le contenu de votre annotation");
 					else //création de l'annotation 
 					{
 						var annotatedId = $("div[id^='article-']").attr("id").substring(8);
 						$.ajax({
 					                type: 'POST',
-					                url: "@routes.UserProfile.newAnnotationJson()",
+					                url: "@routes.UserProfile.newAnnotationJgtJson()",
 							contentType: "application/json; charset=UTF-8",
-                					data: JSON.stringify({"pointerBegin":xpointerStart , "pointerEnd":xpointerEnd, "annotatedContent":content, "content":annotationContent, "title":annotationTitle, "annotatedId":annotatedId}),
+                					data: JSON.stringify({"pointerBegin":xpointerStart , "pointerEnd":xpointerEnd, "annotatedContent":content, "content":annotationContent, "title":annotationTitle, "annotatedId":annotatedId, "jugement":jugement, "reformulation":reformulation}),
                 					success: function(){
                     					location.reload();
                 						}

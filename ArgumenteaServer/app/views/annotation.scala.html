@@ -191,7 +191,7 @@
 							//alert("envoi du json");
 							$.ajax({
 						                type: 'POST',
-						                url: "@routes.UserProfile.newAnnotationJson()",
+						                url: "@routes.UserProfile.newAnnotationJgtJson()",
 								contentType: "application/json; charset=UTF-8",
 	                					data: JSON.stringify({"pointerBegin":xpointerStart , "pointerEnd":xpointerEnd, "annotatedContent":content, "content":annotationContent, "title":annotationTitle, "currentUrl":currentUrl.toString()}),
 	                					success: function(){
