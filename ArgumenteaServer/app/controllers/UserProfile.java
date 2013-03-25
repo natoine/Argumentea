@@ -131,7 +131,13 @@ public class UserProfile extends Controller
 				splitedXpointerEnd = SplitedXpointer.createXpointer(annotation.getPointerEnd(), splitedXpointerEnd);
 				//TODO change color wrt Annotation type
 				try {
-					annotatedHtml.highLight(splitedXpointerStart, splitedXpointerEnd, "yellow", annotation.getId().toString());
+					if(annotation instanceof AnnotationJudgment)
+					{
+						if(((AnnotationJudgment)annotation).getJudgment().equalsIgnoreCase("ok"))
+							annotatedHtml.highLight(splitedXpointerStart, splitedXpointerEnd, "green", annotation.getId().toString());
+						else annotatedHtml.highLight(splitedXpointerStart, splitedXpointerEnd, "red", annotation.getId().toString());
+					}
+					else annotatedHtml.highLight(splitedXpointerStart, splitedXpointerEnd, "yellow", annotation.getId().toString());
 				} catch (ParserException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -164,7 +170,7 @@ public class UserProfile extends Controller
 		anyData.put("title", json.get("title").asText());
 		anyData.put("content", json.get("content").asText());
 		anyData.put("reformulation", json.get("reformulation").asText());
-		anyData.put("jugement", json.get("jugement").asText());
+		anyData.put("judgment", json.get("jugement").asText());
 		anyData.put("annotatedContent", json.get("annotatedContent").asText());
 		UserAccount author = UserAccount.findByNickname(session("nickname"));
 		anyData.put("author.id", author.getId().toString());
