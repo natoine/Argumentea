@@ -129,15 +129,20 @@ public class UserProfile extends Controller
 				Annotation annotation = Annotation.findById(annotationId);
 				splitedXpointerStart = SplitedXpointer.createXpointer(annotation.getPointerBegin(), splitedXpointerStart);
 				splitedXpointerEnd = SplitedXpointer.createXpointer(annotation.getPointerEnd(), splitedXpointerEnd);
-				//TODO change color wrt Annotation type
+				String onHover = "";
+				if(annotation.getContent().length() > 140)
+				{
+					onHover = annotation.getContent().substring(0, 140) + " ...";
+				}
+				else onHover = annotation.getContent();
 				try {
 					if(annotation instanceof AnnotationJudgment)
 					{
 						if(((AnnotationJudgment)annotation).getJudgment().equalsIgnoreCase("ok"))
-							annotatedHtml.highLight(splitedXpointerStart, splitedXpointerEnd, "green", annotation.getId().toString());
-						else annotatedHtml.highLight(splitedXpointerStart, splitedXpointerEnd, "red", annotation.getId().toString());
+							annotatedHtml.highLight(splitedXpointerStart, splitedXpointerEnd, "green", annotation.getId().toString(), onHover);
+						else annotatedHtml.highLight(splitedXpointerStart, splitedXpointerEnd, "red", annotation.getId().toString(), onHover);
 					}
-					else annotatedHtml.highLight(splitedXpointerStart, splitedXpointerEnd, "yellow", annotation.getId().toString());
+					else annotatedHtml.highLight(splitedXpointerStart, splitedXpointerEnd, "yellow", annotation.getId().toString(), onHover);
 				} catch (ParserException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
