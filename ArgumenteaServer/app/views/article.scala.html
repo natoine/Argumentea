@@ -7,16 +7,21 @@
 	<script type="text/javascript">
 		$().ready(function() 
 		{
-			var opts = {
-				lang 			: 'fr',
-				styleWidthCSS 	: false,
-				height 			: 150,
-				toolbar 		: 'compact',
-				allowSource 	: false
-			}	
+			//var opts = {
+			//	lang 			: 'fr',
+			//	styleWidthCSS 	: false,
+// 				height 			: 150,
+// 				toolbar 		: 'compact',
+// 				allowSource 	: false
+// 			}	
 			
-			$("#AnnotationFormContent").elrte(opts);
+// 			$("#AnnotationFormContent").elrte(opts);
 			//$("#AnnotationFormReformulation").elrte(opts);
+			
+			tinyMCE.init({
+				mode : "textareas",
+				theme : "simple"
+			});
 		});
 	</script>
 
@@ -44,10 +49,10 @@
 		<div class="formAnnotation">
 			Titre : <br />
 			<input type="text" id="AnnotationFormTitle" style="width:100%" /><br />
-			Jugement : <br /><textarea id="AnnotationFormJgmt" cols="50" name="jugement"></textarea><br />
-			Reformulation : <br /><textarea id="AnnotationFormReformulation" cols="50" name="reformulation"></textarea><br />
-			Contenu de l'annotation : <br /><textarea id="AnnotationFormContent" cols="50" name="content"></textarea><br />
-			<button class="btn btn-select" type ="button">S&eacute;lectionner</button>
+			Jugement : <br /><textarea id="AnnotationFormJgmt" name="jugement"></textarea><br />
+			Reformulation : <br /><textarea id="AnnotationFormReformulation" style="width:100%" name="reformulation"></textarea><br />
+			Contenu de l'annotation : <br /><textarea id="AnnotationFormContent" style="width:100%" name="content"></textarea><br />
+			<button class="btn btn-select" type ="button">Cr&eacute;er une annotation</button>
 		</div>
 		
 		<h2>Annotations : </h2>
@@ -198,13 +203,19 @@ $(document).ready(function($) {
 				        xpointerStart = makeXpointer(currentUrl, trueStartNode, start_offset);
 				        xpointerEnd = makeXpointer(currentUrl, trueEndNode, end_offset);
 					
-					var iframe = $("iframe").contents();					
-					$textAreaContent = $(iframe).find("body").html();
+					var iframeFormContenu = $("#AnnotationFormContent_ifr").contents();					
+					$textAreaContent = $(iframeFormContenu).find("body").html();
+					//alert($("#AnnotationFormContent").html());
+					//$textAreaContent = $("#AnnotationFormContent").html();
 					var annotationContent = $textAreaContent;
 					//alert(annotationContent);
 
-					$reform = $("#AnnotationFormReformulation");
-					var reformulation = $reform.val();
+
+					//$reform = $("#AnnotationFormReformulation");
+					var iframeFormReform = $("#AnnotationFormReformulation_ifr").contents();
+					$reform = $(iframeFormReform).find("body").html();
+					//var reformulation = $reform.val();
+					var reformulation = $reform;
 
 					$title = $("#AnnotationFormTitle");
 					var annotationTitle = $title.val() ;
@@ -217,7 +228,7 @@ $(document).ready(function($) {
 						$.ajax({
 					                type: 'POST',
 					                url: "@routes.UserProfile.newAnnotationJgtJson()",
-							contentType: "application/json; charset=UTF-8",
+									contentType: "application/json; charset=UTF-8",
                 					data: JSON.stringify({"pointerBegin":xpointerStart , "pointerEnd":xpointerEnd, "annotatedContent":content, "content":annotationContent, "title":annotationTitle, "annotatedId":annotatedId, "jugement":jugement, "reformulation":reformulation}),
                 					success: function(){
                     					location.reload();

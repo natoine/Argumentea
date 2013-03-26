@@ -342,6 +342,11 @@ public class AnnotatedHtml
 	private Node findNode(NodeList nl , SplitedXpointer splitedXpointer)
 	{
 		int nbNode = splitedXpointer.getXpointerTree().length ;
+		
+		System.out.println("Nb nodes : " + nbNode);
+		
+		System.out.println(splitedXpointer);
+		
 		NodeList currentNodeList = nl ;
 		//TODO changer ce comportement
 		//dans notre contexte le contenu d'un article ou d'une annotation est encadré par une balise div d'id commençant par article- ou annotation-

@@ -67,4 +67,16 @@ public class SplitedXpointer
 		else return -1 ;
 	}
 	
+	public String toString()
+	{
+		String str = "SplittedXPointer : indice = " + this.indice + " / startingHtmlNodeName : " + this.startingHtmlNodeName + " / XpointerTree : ";
+		
+		for(int i = 0; i < xpointerTree.length; i++)
+		{
+			str += "Tree[" + i + "] : " + xpointerTree[i] + " /";
+		}
+		
+		return str;
+	}
+	
 }
