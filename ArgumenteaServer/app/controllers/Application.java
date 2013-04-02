@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import models.Annotation;
+import models.AnnotationJudgment;
 import models.Login;
 import models.PasswordForm;
 import models.PwdRecoveryHolder;

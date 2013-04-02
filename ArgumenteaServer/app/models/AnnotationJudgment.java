@@ -1,6 +1,14 @@
 package models;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import org.bson.types.ObjectId;
+
 import com.google.code.morphia.annotations.Entity;
+
+import controllers.MorphiaObject;
 
 @Entity("Resources")
 public class AnnotationJudgment extends Annotation
@@ -21,7 +29,8 @@ public class AnnotationJudgment extends Annotation
 		return judgment;
 	}
 
-	public void setJudgment(String judgment) {
+	public void setJudgment(String judgment) 
+	{
 		this.judgment = judgment;
 	}
 }

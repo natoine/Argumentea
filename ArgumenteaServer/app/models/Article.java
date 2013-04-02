@@ -39,13 +39,24 @@ public class Article extends Resource
 
 	public static void delete(String idToDelete) 
 	{
-		Article toDelete = MorphiaObject.datastore.find(Article.class).field("_id").equal(new ObjectId(idToDelete)).get();
-		if (toDelete != null) {
-			//Logger.info("toDelete: " + toDelete);
+		Article.delete(new ObjectId(idToDelete));
+	}
+	
+	public static void delete(ObjectId idToDelete) 
+	{
+		Article toDelete = MorphiaObject.datastore.find(Article.class).field("_id").equal(idToDelete).get();
+		
+		if (toDelete != null) 
+		{
+			List<Annotation> annotationsToDelete = Annotation.findByResourceId(idToDelete.toString());
+			
+			for(Annotation annotation : annotationsToDelete)
+			{
+				Annotation.delete(annotation.getId());
+			}
+			
 			MorphiaObject.datastore.delete(toDelete);
-		} else {
-			//Logger.debug("ID No Found: " + idToDelete);
-		}
+		} 
 	}
 		
 	public static Article findById(String id)

@@ -57,47 +57,17 @@ public class Annotation extends Resource
 		this.pointerEnd = pointerEnd;
 	}
 	
-	public static List<Annotation> allAnnotation() {
-		List<Annotation> annotations = new ArrayList<Annotation>() ;
-		if (MorphiaObject.datastore != null) {
-			List<Resource> ressources = MorphiaObject.datastore.find(Resource.class).asList();
-			for(Resource r : ressources) 
-			{
-				if(r.getClass().equals(Annotation.class)) annotations.add((Annotation)r);
-			}
-			return annotations ;
-		} else {
-			return annotations ;
-		}
-	}
-	
 	public static void create(Annotation annotation) {
 		annotation.setCreationDate(new Date());
 		MorphiaObject.morphia.map(Resource.class);
 		MorphiaObject.datastore.save(annotation);
 	}
-
-	public static void delete(String idToDelete) {
-		Annotation toDelete = MorphiaObject.datastore.find(Annotation.class).field("_id").equal(new ObjectId(idToDelete)).get();
-		if (toDelete != null) {
-			//Logger.info("toDelete: " + toDelete);
-			MorphiaObject.datastore.delete(toDelete);
-		} else {
-			//Logger.debug("ID No Found: " + idToDelete);
-		}
-	}
 	
-	public static Annotation findById(String id)
-	{
-		return MorphiaObject.datastore.find(Annotation.class).field("_id").equal(new ObjectId(id)).get();
-	}
-	
-	public static List<Annotation> findByResourceId(String id)
-	{
-		Resource resource = Resource.findById(id);
-		return MorphiaObject.datastore.find(Annotation.class).field("annotated").equal(resource).asList();
-	}
-	
+	/**
+	 * Renvoi la liste des annotations qui pointent vers l'annotation id
+	 * @param id
+	 * @return
+	 */
 	public static List<Annotation> findByResourceId(String id, int start, int end, boolean reverse)
 	{
 		List<Annotation> annotations = Annotation.findByResourceId(id);
@@ -121,35 +91,53 @@ public class Annotation extends Resource
 			return annotations;
 	}
 	
-	public static List<Annotation> findByAuthor(UserAccount author)
+	/**
+	 * Renvoi la liste des annotations qui pointent vers l'annotation id
+	 * @param id
+	 * @return
+	 */
+	public static List<Annotation> findByResourceId(String id)
 	{
-		List<Annotation> annotations = new ArrayList<Annotation>();
-		
+		Resource resource = Resource.findById(id);
+		return MorphiaObject.datastore.find(Annotation.class).field("annotated").equal(resource).asList();
+	}
+	
+	public static void delete(Object idToDelete)
+	{
+		Annotation toDelete = MorphiaObject.datastore.find(Annotation.class).field("_id").equal(idToDelete).get();
+		if (toDelete != null) 
+		{
+			List<Annotation> annotationsToDelete = Annotation.findByResourceId(idToDelete.toString());
+			
+			for(Annotation annotation : annotationsToDelete)
+			{
+				Annotation.delete(annotation.getId());
+			}
+			MorphiaObject.datastore.delete(toDelete);
+		}
+	}
+
+	public static void delete(String idToDelete) 
+	{
+		Annotation.delete(new ObjectId(idToDelete));
+	}
+	
+	public static Annotation findById(String id)
+	{
+		return MorphiaObject.datastore.find(Annotation.class).field("_id").equal(new ObjectId(id)).get();
+	}
+	
+	public static List<Annotation> allAnnotation() {
+		List<Annotation> annotations = new ArrayList<Annotation>() ;
 		if (MorphiaObject.datastore != null) {
 			List<Resource> ressources = MorphiaObject.datastore.find(Resource.class).asList();
 			for(Resource r : ressources) 
 			{
-				if(r.getClass().equals(Annotation.class) && r.getAuthor().isSameUser(author))
-				{
-					annotations.add((Annotation)r);
-				}
+				if(r.getClass().equals(Annotation.class)) annotations.add((Annotation)r);
 			}
 			return annotations ;
 		} else {
 			return annotations ;
-		}
-	}
-	
-	public static List<Annotation> findByAuthor(UserAccount author, int limit)
-	{
-		List<Annotation> annotation = findByAuthor(author);
-		if(annotation.size() - 10 < 0)
-		{
-			return annotation.subList(0, annotation.size());
-		}
-		else
-		{
-			return annotation.subList(annotation.size() - 10, annotation.size());
 		}
 	}
 	
@@ -176,7 +164,39 @@ public class Annotation extends Resource
 	{
 		return Annotation.allAnnotation().size();
 	}
-
+	
+	public static List<Annotation> findByAuthor(UserAccount author)
+	{
+		List<Annotation> annotations = new ArrayList<Annotation>();
+		
+		if (MorphiaObject.datastore != null) {
+			List<Resource> ressources = MorphiaObject.datastore.find(Resource.class).asList();
+			for(Resource r : ressources) 
+			{
+				if(r instanceof Annotation && r.getAuthor().isSameUser(author))
+				{
+					annotations.add((Annotation)r);
+				}
+			}
+			return annotations ;
+		} else {
+			return annotations ;
+		}
+	}
+	
+	public static List<Annotation> findByAuthor(UserAccount author, int limit)
+	{
+		List<Annotation> annotation = findByAuthor(author);
+		if(annotation.size() - 10 < 0)
+		{
+			return annotation.subList(0, annotation.size());
+		}
+		else
+		{
+			return annotation.subList(annotation.size() - 10, annotation.size());
+		}
+	}
+	
 	@Override
 	public boolean isArticle() {
 		return false;

@@ -7,15 +7,10 @@
 	<script type="text/javascript">
 		$().ready(function() 
 		{
-			var opts = {
-				lang 			: 'fr',
-				styleWidthCSS 	: false,
-				height 			: 150,
-				toolbar 		: 'compact',
-				allowSource 	: false
-			}	
-			
-			$("#AnnotationFormContent").elrte(opts);
+			tinyMCE.init({
+				mode : "textareas",
+				theme : "simple"
+			});
 		});
 	</script>
 
@@ -27,7 +22,7 @@
 		</div>
 	
 		<div id="zoneAnnotable">  
-			<div class="ResourceContent" id="annotation-@annotation.getId">
+			<div class="ResourceContent" id="annotation-@annotation.getId" name="annotation-@annotation.getId">
 				@Html(annotation.getContent)
 			</div>
 		</div>
@@ -42,6 +37,22 @@
 			@Html(annotation.getAnnotatedContent)
 		</div>
 		
+		@annotation match {
+			case annotationJudgment : AnnotationJudgment => {
+			
+				<p>Ce qu'en a pense <b>@annotation.getAuthor.getNickname</b> :</p>
+			
+				@if(annotationJudgment.getJudgment.equals("ok")) {
+					<div class="jgt_pos choosed"></div><br /><br />
+				} else {
+					<div class="jgt_neg choosed"></div><br /><br />
+				}
+			
+				<h4>Reformultation :</h4>
+				<div class="content">@Html(annotationJudgment.getReformulation)</div>
+			}
+		}
+		
 		@if(annotation.getAuthor.getNickname.equals(session.get("nickname"))) {
 			@form(routes.UserProfile.deleteAnnotation(annotation.getId.toString)) {
 				<input type="submit" value="Supprimer cette annotation" class="btn" />
@@ -53,27 +64,57 @@
 	<div class="formAnnotation">
 		Titre :<br />
 		<input type="text" id="AnnotationFormTitle" style="width:100%"/><br />
-		Contenu de l'annotation : <br /><textarea id="AnnotationFormContent" cols="50" name="content"></textarea><br />
-		<button class="btn btn-select" type ="button">S&eacute;lectionner</button>
+		Jugement : <br /><!-- <textarea id="AnnotationFormJgmt" name="jugement"></textarea>-->
+			<div id="jgt_pos" class="jgt_pos"></div>
+			<div id="jgt_neg" class="jgt_neg"></div>
+			
+			<br /><br />
+			Reformulation : <br /><textarea id="AnnotationFormReformulation" style="width:100%" name="reformulation"></textarea><br />
+		Contenu de l'annotation : <br /><textarea id="AnnotationFormContent" style="width:100%" name="content"></textarea><br />
+		<button class="btn btn-select" type ="button">Cr&eacute;er une annotation</button>
 	</div>
 	
 	<h2>Annotations : </h2>
 		<ul>
 		    @for((annotation, i) <- annotations.zipWithIndex) {
 				@if(i % 2 == 0) {
-					<li class="alt">
+					<li class="alt block">
 				} else {
-					<li>
+					<li class="block">
 				}
-				<div class="meta_infos">par <a href="/user/@annotation.getAuthor.getNickname">@annotation.getAuthor.getNickname</a></div>
-				<div class="content">@Html(annotation.getContent)</div>
-				<div class="annotatedContent">@Html(annotation.getAnnotatedContent)</div>
-				
-				@if(annotation.getAuthor.getNickname.equals(session.get("nickname"))) {
-					@form(routes.UserProfile.deleteAnnotation(annotation.getId.toString)) {
-						<input type="submit" value="Supprimer cette annotation" class="btn" />
+				<div class="annotation" id="annotation-@annotation.getId">
+					<h3><a href="/annotation/@annotation.getId">@annotation.getTitle</a></h3>
+					<div class="meta_infos">par <a href="/user/@annotation.getAuthor.getNickname">@annotation.getAuthor.getNickname</a></div>
+					
+					<h4>Ce qui est dit :</h4>
+					<div class="content">@Html(annotation.getContent)</div>
+					<h4>Au sujet de :</h4>
+					<div class="annotatedContent">@Html(annotation.getAnnotatedContent)</div>
+					
+					@annotation match {
+						case annotationJudgment : AnnotationJudgment => {
+						
+							<p>Ce qu'en a pense <b>@annotation.getAuthor.getNickname</b> :</p>
+						
+							@if(annotationJudgment.getJudgment.equals("ok")) {
+								<div class="jgt_pos choosed"></div><br /><br />
+							} else {
+								<div class="jgt_neg choosed"></div><br /><br />
+							}
+						
+							<h4>Reformultation :</h4>
+							<div class="content">@Html(annotationJudgment.getReformulation)</div>
+						}
 					}
-				}
+					
+					@if(annotation.getAuthor.getNickname.equals(session.get("nickname"))) {
+						@form(routes.UserProfile.deleteAnnotation(annotation.getId.toString)) {
+							<input type="submit" value="Supprimer cette annotation" class="btn" />
+						}
+					}
+					
+					<button name="showRef" id="buttonAnnotation-@annotation.getId">Voir r&eacute;f&eacute;rence</button>
+				</div>
 			</li>
 		}
 		
@@ -94,181 +135,295 @@
 	</div>
 }
 <script type="text/javascript">
-	$(document).ready(function($) {
-		
-		$("body").ajaxError(function(event, jqXHR, ajaxSettings, thrownError){
-	            alert("ERROR : " + thrownError);
-	            location.reload();
-	        });
-	        
-	    	$btnSelect = $(".btn-select");
+$(document).ready(function($) {
 	
-		//Pour récupérer une sélection, un contenu et deux xpointers
-		$btnSelect.click(function(event) {
-		 	//alert("click");
-			//recuperation de la selection en cours
-	        	var selection = window.getSelection();
-			//vérifier que la sélection n'est pas vide
-			if(selection.toString().length > 0)
-	                {
-				var content = selection.toString();
-				var currentUrl = window.location;
-				//alert("content : " + content);
-				//alert("currentUrl : " + currentUrl);
-				//Test du Browser
-				//TODO
-				//XPOINTER Mozilla
-				var xpointerStart;
-	                        var xpointerEnd;
-	                        
-	                        //Noeuds du début et de la fin de la selection
-	                        var start_node = selection.anchorNode;//selection.startContainer;
-	                        var end_node = selection.focusNode;//selection.endContainer;
-				//alert("start_node" + start_node);
-	        		//alert("end_node :" + end_node );                        
-	                        //Le nombre de caractere entre le noeud pere et le debut/fin de la selection
-	                        var start_offset = selection.anchorOffset; // NE TIENT PAS COMPTE DES CARACTERES HTML PRESENTS AVANT LA SELECTION JUSQU'AU NOEUD PERE
-	                        var end_offset = selection.focusOffset;
-	                        
-				//Corrections des noeuds de départ et de fin        
-	                        var trueStartNode = start_node ;
-	                        var trueEndNode = end_node;
-	                            
-	                        /*Firefox ajoute des noeuds text pour entourer du texte, quand le noeud pere est du type text, 
-	                        *on reccupere le pere du noeud text
-	                        **/
-	                        if(start_node.nodeType == 3)
-	                        {
-	                        	trueStartNode = start_node.parentNode ;
-	                        }
-	                        if(end_node.nodeType == 3)
-	                        {
-	                        	trueEndNode = end_node.parentNode;
-	                        }
-	                                
-	                        //echange trueStartNode et trueEndNode quand le cas ou on fait une selection inversé (on commence de la fin)
-	                        //cas ou le noeud de depart precede le noeud d'arrive
-	                        //ou bien le noeud de depart est contenu dans le noeud d'arrive 
-	                        if(trueStartNode.compareDocumentPosition(trueEndNode) == 2 || 
-	                           trueStartNode.compareDocumentPosition(trueEndNode) == 10)
-	                        {
-	                        	var tmp = trueStartNode;
-	                        	trueStartNode = trueEndNode;
-	                        	trueEndNode = tmp;
-			                tmp = start_offset;
-			                start_offset = end_offset;
-			                end_offset = tmp;
-	                        }
-	                        //cas ou on fait une selection inversé dans une meme balise
-	                        else if(trueStartNode.compareDocumentPosition(trueEndNode) == 0 && start_offset > end_offset)
-	                        {
-			                var tmp = start_offset;
-			                start_offset = end_offset;
-			                end_offset = tmp;
-	                        }
-				//vérifier que les deux noeuds sont bien dans une zone annotable (fils du noeud d'id : zoneAnnotable)
-				var testStart = testAnnotable(trueStartNode);
-				if(testStart)
+// 	$("body").ajaxError(function(event, jqXHR, ajaxSettings, thrownError){
+//             alert("ERROR : " + thrownError);
+//             location.reload();
+//         });
+
+
+		$("#jgt_pos").click(function()
+		{
+			$(this).addClass("choosed");
+			$("#jgt_neg").removeClass("choosed");
+		});
+		
+		$("#jgt_neg").click(function()
+		{
+			$(this).addClass("choosed");
+			$("#jgt_pos").removeClass("choosed");
+		});
+        
+    	$btnSelect = $(".btn-select");
+    	
+    	/**
+    	*	Node correspond au textNode dans laquelle est la s�lection
+    	*	Renvoi l'offset de la s�lection par rapport au d�but du texte annotable
+    	*/
+    	function computeOffset(node, offset)
+    	{
+		var computedOffset = offset;
+    		
+    		var currentNode = node.previousSibling;
+
+    		while(currentNode != null)
+    		{
+				computedOffset += currentNode.textContent.length;
+    			currentNode = currentNode.previousSibling;
+    		}
+		//Tester si le p�re n'est pas une span d'annotation
+		if(node.parentNode.id.indexOf("annotationSpan-") != -1)
+		{
+			computedOffset = computeOffset(node.parentNode, computedOffset);
+		}
+    		return computedOffset;
+    	}
+
+	//Pour récupérer une sélection, un contenu et deux xpointers
+	$btnSelect.click(function(event) {
+	 	//recuperation de la selection en cours
+        	var selection = window.getSelection();
+		//vérifier que la sélection n'est pas vide
+		if(selection.toString().length > 0)
+                {
+			var content = selection.toString();
+			var currentUrl = window.location;
+			//Test du Browser
+			//TODO
+			//XPOINTER Mozilla
+			var xpointerStart;
+                        var xpointerEnd;
+                        
+                        //Noeuds du début et de la fin de la selection
+                        var start_node = selection.anchorNode;//selection.startContainer;
+                        var end_node = selection.focusNode;//selection.endContainer;
+		        //Le nombre de caractere entre le noeud pere et le debut/fin de la selection
+                        
+                        var start_offset = computeOffset(start_node, selection.anchorOffset);
+                       var end_offset = computeOffset(end_node, selection.focusOffset);
+                       //Corrections des noeuds de départ et de fin        
+                        var trueStartNode = start_node ;
+                        var trueEndNode = end_node;
+                            
+                        /*Firefox ajoute des noeuds text pour entourer du texte, quand le noeud pere est du type text, 
+                        *on reccupere le pere du noeud text
+                        **/
+                        if(start_node.nodeType == 3)
+                        {
+                        	trueStartNode = start_node.parentNode ;
+                        }
+                        if(end_node.nodeType == 3)
+                        {
+                        	trueEndNode = end_node.parentNode;
+                        }
+                                
+                        //echange trueStartNode et trueEndNode quand le cas ou on fait une selection inversé (on commence de la fin)
+                        //cas ou le noeud de depart precede le noeud d'arrive
+                        //ou bien le noeud de depart est contenu dans le noeud d'arrive 
+			//Attention �a ne couvre pas tous les cas... � cause des span d'annotation ajout�es donc il faut un traitement c�t� serveur
+                        if(trueStartNode.compareDocumentPosition(trueEndNode) == 2 || 
+                           trueStartNode.compareDocumentPosition(trueEndNode) == 10)
+                        {
+                        	var tmp = trueStartNode;
+                        	trueStartNode = trueEndNode;
+                        	trueEndNode = tmp;
+		                tmp = start_offset;
+		                start_offset = end_offset;
+		                end_offset = tmp;
+                        }
+                        //cas ou on fait une selection inversé dans une meme balise
+                        else if(trueStartNode.compareDocumentPosition(trueEndNode) == 0 && start_offset > end_offset)
+                        {
+		                var tmp = start_offset;
+		                start_offset = end_offset;
+		                end_offset = tmp;
+                        }
+			//vérifier que les deux noeuds sont bien dans une zone annotable (fils du noeud d'id : zoneAnnotable)
+			var testStart = testAnnotable(trueStartNode);
+			if(testStart)
+			{
+				var testEnd = testAnnotable(trueEndNode);
+				if(testEnd)
 				{
-					var testEnd = testAnnotable(trueEndNode);
-					if(testEnd)
+				        xpointerStart = makeXpointer(currentUrl, trueStartNode, start_offset);
+				        xpointerEnd = makeXpointer(currentUrl, trueEndNode, end_offset);
+					
+					var iframeFormContenu = $("#AnnotationFormContent_ifr").contents();					
+					$textAreaContent = $(iframeFormContenu).find("body").html();
+					//alert($("#AnnotationFormContent").html());
+					//$textAreaContent = $("#AnnotationFormContent").html();
+					var annotationContent = $textAreaContent;
+					//alert(annotationContent);
+
+
+					//$reform = $("#AnnotationFormReformulation");
+					var iframeFormReform = $("#AnnotationFormReformulation_ifr").contents();
+					$reform = $(iframeFormReform).find("body").html();
+					//var reformulation = $reform.val();
+					var reformulation = $reform;
+
+					$title = $("#AnnotationFormTitle");
+					var annotationTitle = $title.val() ;
+					
+					//$jgt = $("#AnnotationFormJgmt");
+					//var jugement = $jgt.val();
+					
+					var jugement = "";
+					
+					if($("#jgt_pos").hasClass("choosed"))
 					{
-					        xpointerStart = makeXpointer(currentUrl, trueStartNode, start_offset);
-					        xpointerEnd = makeXpointer(currentUrl, trueEndNode, end_offset);
-						//alert(xpointerStart);
-					        //alert(xpointerEnd);
-						//alert(content);
-						//alert(currentUrl);
-						$textAreaContent = $("#AnnotationFormContent");
-						var annotationContent = $textAreaContent.val() ;
-						//alert(annotationContent);
-						$title = $("#AnnotationFormTitle");
-						var annotationTitle = $title.val() ;
-						//alert(annotationTitle);
-						if(annotationContent.length == 0) alert("Veuillez saisir le contenu de votre annotation");
-						else //création de l'annotation 
-						{
-							//alert("envoi du json");
-							$.ajax({
-						                type: 'POST',
-						                url: "@routes.UserProfile.newAnnotationJgtJson()",
-								contentType: "application/json; charset=UTF-8",
-	                					data: JSON.stringify({"pointerBegin":xpointerStart , "pointerEnd":xpointerEnd, "annotatedContent":content, "content":annotationContent, "title":annotationTitle, "currentUrl":currentUrl.toString()}),
-	                					success: function(){
-	                    					location.reload();
-	                						}
-	            						})
-						}
+						jugement = "ok";
 					}
-					else alert("sélection non valide");
+					else if($("#jgt_neg").hasClass("choosed"))
+					{
+						jugement = "not_ok";
+					}
+					
+					if(annotationContent.length == 0) alert("Veuillez saisir le contenu de votre annotation");
+					else //création de l'annotation 
+					{
+						var annotatedId = $("div[name^='annotation-']").attr("name").substring(11);
+						$.ajax({
+					                type: 'POST',
+					                url: "@routes.UserProfile.newAnnotationJgtJson()",
+									contentType: "application/json; charset=UTF-8",
+                					data: JSON.stringify({"pointerBegin":xpointerStart , "pointerEnd":xpointerEnd, "annotatedContent":content, "content":annotationContent, "title":annotationTitle, "annotatedId":annotatedId, "jugement":jugement, "reformulation":reformulation}),
+                					success: function(){
+                    					location.reload();
+                						}
+            						})
+					}
 				}
 				else alert("sélection non valide");
 			}
-			else alert("Veuillez sélectionner une partie de l'article.");
-		});
-				/*
-				* Vérifie que le noeud est bien un fils du noeud d'id zoneAnnotable
-				**/
-				function testAnnotable(node)
-				{
-					//alert("testAnnotable : " + node);
-					while(node.id != "zoneAnnotable")
-					{
-						node = node.parentNode ;
-						if(node.nodeName == 'BODY') return false ;
-					}
-					return true ;
-				}
-	
-			            /*
-	                             *
-	                             *Format d'un xPointer: 
-	                             *url_courant#xpointer(id('idNoeudPere')/chemin/des/peres, nbCaractereEntreNoeudEtSelection)
-	                             *ou si on ne trouve pas d'id de reference:
-	                             *url_courant#xpointer(body/chemin/des/peres, nbCaractereEntreNoeudEtSelection)
-	                             *
-	                             **/
-	                            
-	                            //parametre: url courant, node de depart pour le calcul du xpointer et le offset (nb caractere entre node et le debut de la selection)
-	                            function makeXpointer(url, node, offset)
-	                            {
-	                                var xpointer = url+"#xpointer(";
-	                               // var idNode = -1;
-					var idNode = node.id;
-	                                var path = "";
-	                                var nbPreviousSiblings = 0;
-	                                var previousNode;
-	                                //alert("calcul XPOINTER : nodeName avant while : " + node.nodeName);
-	                                //tant qu'on ne trouve pas de noeud avec un id
-	                                while(idNode == "" || idNode == -1)
-	                                {
-					    //alert("calcul XPOINTER : nodeName while : " + node.nodeName);
-					    //alert("calcul XPOINTER : idNode : " + idNode);
-	                                    previousNode = node;
-	                                    //calcul de la position du noeud actuel par rapport a son pere
-	                                    nbPreviousSiblings = $(previousNode).prevAll().length;
-	                                    path = "/" + nbPreviousSiblings + path;
-	                                    node = previousNode.parentNode;
-	                                    
-	                                    //si le noeud actuel est la balise body on break la boucle car on est arrivé au bout sans trouver d'id
-	                                    if(node.nodeName == 'BODY')
-					    {
-	                                        break;
-	                                    } 
-					   idNode = node.id;
-					   //alert("calcul XPOINTER : change idNode");
-	                                }
-	                                if(node.nodeName == 'BODY')
-	                                {
-	                                    xpointer = xpointer + "body"
-	                                }
-	                                else
-	                                {
-	                                    xpointer = xpointer + "id('" + idNode + "')";
-	                                }
-	                                xpointer = xpointer + path + "," + offset + ")";
-	                                return xpointer;
-	                            }
-	
+			else alert("sélection non valide");
+		}
+		else alert("Veuillez sélectionner une partie de l'article.");
 	});
-	</script>
+/*
+* Vérifie que le noeud est bien un fils du noeud d'id zoneAnnotable
+**/
+	function testAnnotable(node)
+	{
+		while(node.id != "zoneAnnotable")
+		{
+			node = node.parentNode ;
+			if(node.nodeName == 'BODY') return false ;
+		}
+		return true ;
+	}
+
+	/*
+	*
+	*Format d'un xPointer: 
+	*url_courant#xpointer(id('idNoeudPere')/chemin/des/peres, nbCaractereEntreNoeudEtSelection)
+	*ou si on ne trouve pas d'id de reference:
+	*url_courant#xpointer(body/chemin/des/peres, nbCaractereEntreNoeudEtSelection)
+	*
+	**/
+                        
+	//parametre: url courant, node de depart pour le calcul du xpointer et le offset (nb caractere entre node et le debut de la selection)
+	function makeXpointer(url, node, offset)
+	{
+		 var xpointer = url+"#xpointer(";
+		// var idNode = -1;
+		var idNode = node.id;
+		var path = "";
+		var nbPreviousSiblings = 0;
+		var previousNode;
+		//tant qu'on ne trouve pas de noeud avec un id et il faut ignorer les id des span annot�es
+		while(idNode == "" || idNode == -1 || idNode.indexOf("annotationSpan-") != -1)
+		{
+			previousNode = node;
+			//ignorer les span d'annotation
+			if(idNode.indexOf("annotationSpan-") == -1)
+			{
+				//calcul de la position du noeud actuel par rapport a son pere
+				nbPreviousSiblings = $(previousNode).prevAll().length;
+				path = "/" + nbPreviousSiblings + path;
+			}
+			node = previousNode.parentNode;
+			
+			//si le noeud actuel est la balise body on break la boucle car on est arrivé au bout sans trouver d'id
+			if(node.nodeName == 'BODY')
+			{
+				break;
+			} 
+			
+			idNode = node.id;
+		}
+		
+		if(node.nodeName == 'BODY')
+		{
+		    xpointer = xpointer + "body"
+		}
+		else
+		{
+		    xpointer = xpointer + "id('" + idNode + "')";
+		}
+		xpointer = xpointer + path + "," + offset + ")";
+		return xpointer;
+	}
+                            
+	$("button[id^='buttonAnnotation-']").click(function()
+	{
+		var annotationId = $(this).attr("id").substr(17);
+		
+		var annotationNode = $("div[id='annotation-" + annotationId + "']'");
+		
+		if($(annotationNode).hasClass("selected"))
+		{
+			$(annotationNode).removeClass("selected");
+		}
+		else
+		{
+			$(annotationNode).addClass("selected");
+		}
+		
+		var articleId = $("div[name^='annotation-']").attr("name").substring(11);
+		
+		highlight(articleId);
+	});
+	
+	function highlight(articleId)
+	{
+		var nodes = "{\"resourceId\":\"" + articleId + "\", \"annotationsId\":[";
+		
+		var i = 0;
+		
+		$(".selected").each(function()
+		{
+			var id = $(this).attr("id").substring(11);
+			nodes += "{\"wut\":\"" + id + "\"},";
+			i++;
+		});
+		
+		if(i == 0)
+		{
+			window.location.reload();
+		}
+		else
+		{
+			nodes = nodes.substring(0, nodes.length - 1);
+			nodes += "]}";
+			
+			$.ajax(
+			{
+				headers: { 
+			        "Accept" : "text/plain; charset=utf-8",
+			    },
+				url: "/resourceContentAnnotated",
+				type: "POST",
+				contentType:"application/json",
+				data: nodes,
+				dataType: "json",
+			}).always(function(data)
+			{
+				$("#annotation-" + articleId).html(data["responseText"]);
+			});
+		}
+	}
+	
+});
+</script>

@@ -31,7 +31,7 @@ POST    /articles/:id/delete       	controllers.UserProfile.deleteArticle(id: St
 GET		/article/:id/:page			controllers.UserProfile.article(id: String, page : Integer)
 GET		/article/:id				controllers.UserProfile.article(id: String, page : Integer ?= 0)
 GET 	/newArticle					controllers.UserProfile.newArticleForm()
-POST	/articleContentAnnotated	controllers.UserProfile.getArticleContentAnnotated()
+POST	/resourceContentAnnotated	controllers.UserProfile.getResourceContentAnnotated()
 
 #Annotation
 GET		/annotations				controllers.UserProfile.annotations()

@@ -102,16 +102,15 @@ public class UserProfile extends Controller
 		}
 	}
 	
-	public static Result getArticleContentAnnotated()
+	public static Result getResourceContentAnnotated()
 	{
 		JsonNode json = request().body().asJson();
 		
-		String articleId = json.get("articleId").asText();
+		String resourceId = json.get("resourceId").asText();
 		
-		if( ! articleId.equals(""))
+		if( ! resourceId.equals("")) // ça ça pue ! on a la méthode isEmpty sur les Strings depuis 1996 !
 		{
-			
-			Article article = Article.findById(articleId);
+			Resource article = Resource.findById(resourceId);
 			String htmlContent = article.getContent();
 			//System.out.println(htmlContent);
 			List<String> annotationsId = json.get("annotationsId").findValuesAsText("wut");
@@ -255,8 +254,8 @@ public class UserProfile extends Controller
 	public static Result deleteAnnotation(String id) 
 	{
 		// vérifier que l'annotation appartient bien a la personne connectée
-		Annotation.delete(id);
-		return redirect(routes.UserProfile.annotations());
+		AnnotationJudgment.delete(id);
+		return redirect(routes.UserProfile.index());
 	}
 	
 	public static Result annotation(String id, Integer page)

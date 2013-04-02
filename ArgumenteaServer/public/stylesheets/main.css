@@ -201,6 +201,38 @@ li.nav:hover
 	margin-bottom:20px;
 }
 
+.jgt_pos
+{
+	background-image:url(../images/ok_greyed.jpg);
+	width:23px;
+	height:23px;
+	float:left;
+}
+
+.jgt_neg
+{
+	background-image:url(../images/not_ok_greyed.jpg);
+	width:23px;
+	height:23px;
+	float:left;
+}
+
+.jgt_pos.choosed
+{
+	background-image:url(../images/ok.jpg);
+	width:23px;
+	height:23px;
+	float:left;
+}
+
+.jgt_neg.choosed
+{
+	background-image:url(../images/not_ok.jpg);
+	width:23px;
+	height:23px;
+	float:left;
+}
+
 #zoneAnnotable
 {
 	margin-bottom:20px;

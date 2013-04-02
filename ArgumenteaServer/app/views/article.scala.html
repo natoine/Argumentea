@@ -7,17 +7,6 @@
 	<script type="text/javascript">
 		$().ready(function() 
 		{
-			//var opts = {
-			//	lang 			: 'fr',
-			//	styleWidthCSS 	: false,
-// 				height 			: 150,
-// 				toolbar 		: 'compact',
-// 				allowSource 	: false
-// 			}	
-			
-// 			$("#AnnotationFormContent").elrte(opts);
-			//$("#AnnotationFormReformulation").elrte(opts);
-			
 			tinyMCE.init({
 				mode : "textareas",
 				theme : "simple"
@@ -48,8 +37,12 @@
  
 		<div class="formAnnotation">
 			Titre : <br />
-			<input type="text" id="AnnotationFormTitle" style="width:100%" /><br />
-			Jugement : <br /><textarea id="AnnotationFormJgmt" name="jugement"></textarea><br />
+			<input type="text" id="AnnotationFormTitle" style="width:100%" /><br /><br />
+			Jugement : <br /><!-- <textarea id="AnnotationFormJgmt" name="jugement"></textarea>-->
+			<div id="jgt_pos" class="jgt_pos"></div>
+			<div id="jgt_neg" class="jgt_neg"></div>
+			
+			<br /><br />
 			Reformulation : <br /><textarea id="AnnotationFormReformulation" style="width:100%" name="reformulation"></textarea><br />
 			Contenu de l'annotation : <br /><textarea id="AnnotationFormContent" style="width:100%" name="content"></textarea><br />
 			<button class="btn btn-select" type ="button">Cr&eacute;er une annotation</button>
@@ -69,8 +62,24 @@
 					
 					<h4>Ce qui est dit :</h4>
 					<div class="content">@Html(annotation.getContent)</div>
-					<h4>Au sujet de :</h4>		
+					<h4>Au sujet de :</h4>
 					<div class="annotatedContent">@Html(annotation.getAnnotatedContent)</div>
+					
+					@annotation match {
+						case annotationJudgment : AnnotationJudgment => {
+						
+							<p>Ce qu'en a pense <b>@article.getAuthor.getNickname</b> :</p>
+						
+							@if(annotationJudgment.getJudgment.equals("ok")) {
+								<div class="jgt_pos choosed"></div><br /><br />
+							} else {
+								<div class="jgt_neg choosed"></div><br /><br />
+							}
+						
+							<h4>Reformultation :</h4>
+							<div class="content">@Html(annotationJudgment.getReformulation)</div>
+						}
+					}
 					
 					@if(annotation.getAuthor.getNickname.equals(session.get("nickname"))) {
 						@form(routes.UserProfile.deleteAnnotation(annotation.getId.toString)) {
@@ -108,6 +117,19 @@ $(document).ready(function($) {
 //             alert("ERROR : " + thrownError);
 //             location.reload();
 //         });
+
+
+		$("#jgt_pos").click(function()
+		{
+			$(this).addClass("choosed");
+			$("#jgt_neg").removeClass("choosed");
+		});
+		
+		$("#jgt_neg").click(function()
+		{
+			$(this).addClass("choosed");
+			$("#jgt_pos").removeClass("choosed");
+		});
         
     	$btnSelect = $(".btn-select");
     	
@@ -123,7 +145,7 @@ $(document).ready(function($) {
 
     		while(currentNode != null)
     		{
-			computedOffset += currentNode.textContent.length;
+				computedOffset += currentNode.textContent.length;
     			currentNode = currentNode.previousSibling;
     		}
 		//Tester si le père n'est pas une span d'annotation
@@ -219,8 +241,21 @@ $(document).ready(function($) {
 
 					$title = $("#AnnotationFormTitle");
 					var annotationTitle = $title.val() ;
-					$jgt = $("#AnnotationFormJgmt");
-					var jugement = $jgt.val();
+					
+					//$jgt = $("#AnnotationFormJgmt");
+					//var jugement = $jgt.val();
+					
+					var jugement = "";
+					
+					if($("#jgt_pos").hasClass("choosed"))
+					{
+						jugement = "ok";
+					}
+					else if($("#jgt_neg").hasClass("choosed"))
+					{
+						jugement = "not_ok";
+					}
+					
 					if(annotationContent.length == 0) alert("Veuillez saisir le contenu de votre annotation");
 					else //crÃ©ation de l'annotation 
 					{
@@ -329,7 +364,7 @@ $(document).ready(function($) {
 	
 	function highlight(articleId)
 	{
-		var nodes = "{\"articleId\":\"" + articleId + "\", \"annotationsId\":[";
+		var nodes = "{\"resourceId\":\"" + articleId + "\", \"annotationsId\":[";
 		
 		var i = 0;
 		
