@@ -65,9 +65,29 @@ public class AnnotatedHtml
 		NodeList toreturn = new NodeList();
 		
 		String originalContent = node.getText() ;
-		String beforeSpan = originalContent.substring(0, indiceStart + 1);
-		String contentAnnotated = originalContent.substring(indiceStart + 1, indiceEnd + 1);
-		String afterSpan = originalContent.substring(indiceEnd + 1);
+		String beforeSpan ;
+		String contentAnnotated ;
+		String afterSpan ;
+		if(indiceStart + 1 < originalContent.length()) 
+		{
+			beforeSpan = originalContent.substring(0, indiceStart + 1);
+			if(indiceEnd + 1 < originalContent.length())
+			{
+				contentAnnotated = originalContent.substring(indiceStart + 1, indiceEnd + 1);
+				afterSpan = originalContent.substring(indiceEnd + 1);
+			}
+			else 
+			{
+				contentAnnotated = originalContent.substring(indiceStart +1);
+				afterSpan = "";
+			}
+		}
+		else
+		{
+			beforeSpan = originalContent ;
+			contentAnnotated = "";
+			afterSpan = "" ;
+		}
 		
 		Span annotationSpan = new Span();
 		TagNode endSpan = new TagNode();

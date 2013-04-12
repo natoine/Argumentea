@@ -134,8 +134,8 @@ $(document).ready(function($) {
     	$btnSelect = $(".btn-select");
     	
     	/**
-    	*	Node correspond au textNode dans laquelle est la sélection
-    	*	Renvoi l'offset de la sélection par rapport au début du texte annotable
+    	*	Node correspond au textNode dans laquelle est la sï¿½lection
+    	*	Renvoi l'offset de la sï¿½lection par rapport au dï¿½but du texte annotable
     	*/
     	function computeOffset(node, offset)
     	{
@@ -148,7 +148,7 @@ $(document).ready(function($) {
 				computedOffset += currentNode.textContent.length;
     			currentNode = currentNode.previousSibling;
     		}
-		//Tester si le père n'est pas une span d'annotation
+		//Tester si le pï¿½re n'est pas une span d'annotation
 		if(node.parentNode.id.indexOf("annotationSpan-") != -1)
 		{
 			computedOffset = computeOffset(node.parentNode, computedOffset);
@@ -197,7 +197,7 @@ $(document).ready(function($) {
                         //echange trueStartNode et trueEndNode quand le cas ou on fait une selection inversÃ© (on commence de la fin)
                         //cas ou le noeud de depart precede le noeud d'arrive
                         //ou bien le noeud de depart est contenu dans le noeud d'arrive 
-			//Attention ça ne couvre pas tous les cas... à cause des span d'annotation ajoutées donc il faut un traitement côté serveur
+			//Attention ï¿½a ne couvre pas tous les cas... ï¿½ cause des span d'annotation ajoutï¿½es donc il faut un traitement cï¿½tï¿½ serveur
                         if(trueStartNode.compareDocumentPosition(trueEndNode) == 2 || 
                            trueStartNode.compareDocumentPosition(trueEndNode) == 10)
                         {
@@ -308,7 +308,7 @@ $(document).ready(function($) {
 		var path = "";
 		var nbPreviousSiblings = 0;
 		var previousNode;
-		//tant qu'on ne trouve pas de noeud avec un id et il faut ignorer les id des span annotées
+		//tant qu'on ne trouve pas de noeud avec un id et il faut ignorer les id des span annotï¿½es
 		while(idNode == "" || idNode == -1 || idNode.indexOf("annotationSpan-") != -1)
 		{
 			previousNode = node;
@@ -389,7 +389,7 @@ $(document).ready(function($) {
 				headers: { 
 			        "Accept" : "text/plain; charset=utf-8",
 			    },
-				url: "/articleContentAnnotated",
+				url: "@routes.UserProfile.getResourceContentAnnotated()",
 				type: "POST",
 				contentType:"application/json",
 				data: nodes,
