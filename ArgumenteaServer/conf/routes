@@ -31,12 +31,13 @@ POST    /articles/:id/delete       	controllers.UserProfile.deleteArticle(id: St
 GET		/article/:id/:page			controllers.UserProfile.article(id: String, page : Integer)
 GET		/article/:id				controllers.UserProfile.article(id: String, page : Integer ?= 0)
 GET 	/newArticle					controllers.UserProfile.newArticleForm()
-POST	/articleContentAnnotated	controllers.UserProfile.getArticleContentAnnotated()
+POST	/resourceContentAnnotated	controllers.UserProfile.getResourceContentAnnotated()
 
 #Annotation
 GET		/annotations				controllers.UserProfile.annotations()
 POST	/annotations				controllers.UserProfile.newAnnotation()
-POST	/annotationsJSON			controllers.UserProfile.newAnnotationJson()
+#POST	/annotationsJSON			controllers.UserProfile.newAnnotationJson()
+POST	/annotationsJSON			controllers.UserProfile.newAnnotationJgtJson()
 POST	/annotations/:id/delete		controllers.UserProfile.deleteAnnotation(id: String)
 GET		/annotation/:id				controllers.UserProfile.annotation(id: String, page: Integer ?= 0)
 GET		/annotation/:id/:page		controllers.UserProfile.annotation(id: String, page: Integer)

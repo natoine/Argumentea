@@ -9,6 +9,7 @@ import org.codehaus.jackson.JsonNode;
 import org.htmlparser.util.ParserException;
 
 import models.Annotation;
+import models.AnnotationJudgment;
 import models.Article;
 import models.Resource;
 import models.UserAccount;
@@ -19,11 +20,12 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Security;
 
-//@Security.Authenticated(Secured.class)
+@Security.Authenticated(Secured.class)
 public class UserProfile extends Controller
 {
 	protected static Form<Article> articleForm = form(Article.class);
 	protected static Form<Annotation> annotationForm = form(Annotation.class);
+	protected static Form<AnnotationJudgment> annotationJgtForm = form(AnnotationJudgment.class);
 	
 	public static Result index()
 	{
@@ -100,16 +102,15 @@ public class UserProfile extends Controller
 		}
 	}
 	
-	public static Result getArticleContentAnnotated()
+	public static Result getResourceContentAnnotated()
 	{
 		JsonNode json = request().body().asJson();
 		
-		String articleId = json.get("articleId").asText();
+		String resourceId = json.get("resourceId").asText();
 		
-		if( ! articleId.equals(""))
+		if( ! resourceId.equals("")) // ça ça pue ! on a la méthode isEmpty sur les Strings depuis 1996 !
 		{
-			
-			Article article = Article.findById(articleId);
+			Resource article = Resource.findById(resourceId);
 			String htmlContent = article.getContent();
 			//System.out.println(htmlContent);
 			List<String> annotationsId = json.get("annotationsId").findValuesAsText("wut");
@@ -127,9 +128,20 @@ public class UserProfile extends Controller
 				Annotation annotation = Annotation.findById(annotationId);
 				splitedXpointerStart = SplitedXpointer.createXpointer(annotation.getPointerBegin(), splitedXpointerStart);
 				splitedXpointerEnd = SplitedXpointer.createXpointer(annotation.getPointerEnd(), splitedXpointerEnd);
-				//TODO change color wrt Annotation type
+				String onHover = "";
+				if(annotation.getContent().length() > 140)
+				{
+					onHover = annotation.getContent().substring(0, 140) + " ...";
+				}
+				else onHover = annotation.getContent();
 				try {
-					annotatedHtml.highLight(splitedXpointerStart, splitedXpointerEnd, "yellow", annotation.getId().toString());
+					if(annotation instanceof AnnotationJudgment)
+					{
+						if(((AnnotationJudgment)annotation).getJudgment().equalsIgnoreCase("ok"))
+							annotatedHtml.highLight(splitedXpointerStart, splitedXpointerEnd, "green", annotation.getId().toString(), onHover);
+						else annotatedHtml.highLight(splitedXpointerStart, splitedXpointerEnd, "red", annotation.getId().toString(), onHover);
+					}
+					else annotatedHtml.highLight(splitedXpointerStart, splitedXpointerEnd, "yellow", annotation.getId().toString(), onHover);
 				} catch (ParserException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -151,6 +163,36 @@ public class UserProfile extends Controller
 	{
 		List<Annotation> annotations = Annotation.findByResourceId(id);		
 		return ok(views.html.annotations.render(annotations, annotationForm));
+	}
+	
+	public static Result newAnnotationJgtJson()
+	{
+		JsonNode json = request().body().asJson();
+		Map<String, String> anyData = new HashMap<String, String>();
+		anyData.put("pointerBegin", json.get("pointerBegin").asText()) ;
+		anyData.put("pointerEnd", json.get("pointerEnd").asText());
+		anyData.put("title", json.get("title").asText());
+		anyData.put("content", json.get("content").asText());
+		anyData.put("reformulation", json.get("reformulation").asText());
+		anyData.put("judgment", json.get("jugement").asText());
+		anyData.put("annotatedContent", json.get("annotatedContent").asText());
+		UserAccount author = UserAccount.findByNickname(session("nickname"));
+		anyData.put("author.id", author.getId().toString());
+		String annotatedId = json.get("annotatedId").asText();
+		System.out.println("annotatedId : " + annotatedId);
+		Resource annotated = Resource.findById(annotatedId);
+		Form<AnnotationJudgment> filledForm = annotationJgtForm.bind(anyData);
+		if(filledForm.hasErrors()) 
+		{
+			return badRequest();
+		}
+		else
+		{
+			AnnotationJudgment annotation = filledForm.get();
+			annotation.setAnnotated(annotated);
+			AnnotationJudgment.create(annotation);
+			return ok();
+		}
 	}
 	
 	public static Result newAnnotationJson()
@@ -212,8 +254,8 @@ public class UserProfile extends Controller
 	public static Result deleteAnnotation(String id) 
 	{
 		// vérifier que l'annotation appartient bien a la personne connectée
-		Annotation.delete(id);
-		return redirect(routes.UserProfile.annotations());
+		AnnotationJudgment.delete(id);
+		return redirect(routes.UserProfile.index());
 	}
 	
 	public static Result annotation(String id, Integer page)
